@@ -1,7 +1,7 @@
 # 🏨 StayEasy
 숙박 예약 웹 애플리케이션
 - 🔗 [StayEasy 링크](http://stayeasy.kro.kr)
-
+- [프로젝트 보고서](./screenshots/StayEasy.pdf)
 ---
 
 ## 📌 프로젝트 개요
