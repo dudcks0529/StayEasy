@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cartMapper">
+
+	<select id="getRoomInfo" parameterType="model.RoomId" resultType="model.Room">
+	select * from bb_room_tbl where room_id = #{roomId} and accommodation_id = #{accommodationId}
+	</select>
+
+	<select id="getMaxCartId" resultType="Integer">
+	select max(cartitem_id) from bb_cartitem_tbl 
+	</select>
+
+	<insert id="insertCartItem" parameterType="map">
+	insert into bb_cartitem_tbl values(
+	#{cartItem_id}, #{user_id}, #{accommodation_id}, #{room_id},
+	#{count}, #{total_price}, #{check_in}, #{check_out}
+	)
+	</insert>
+	
+	<select id="selectCartItem" parameterType="String" resultType="model.CartItem">
+    SELECT * FROM bb_cartitem_tbl WHERE c.user_id = #{user_id}
+	</select>
+	
+</mapper>

@@ -1,0 +1,76 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+<style type="text/css">
+	.container { 
+	display: flex; 
+	margin-top: 10px;
+	justify-content: center;  /* 가운데 정렬 */
+    align-items: center;      /* 수직 가운데 정렬 */
+    max-width: 60%; /* 전체 폭을 제한 */
+     margin-left: auto; /* 중앙 정렬 */
+    margin-right: auto; /* 중앙 정렬 */
+    }
+    .left-panel, .right-panel { 
+    width: 70%; /* 패널 너비 설정 */
+    text-align: center; /* 내부 요소 가운데 정렬 */
+	}
+	.btn{
+	width: 120px;
+	height: 40px;
+	}
+   
+</style>
+<meta charset="EUC-KR">
+<title>장바구니 숙박 수정하기</title>
+</head>
+<body>
+<div align="center">
+ <h1>숙박 예약 수정하기</h1>
+ <h2>${acc.accname}</h2>
+</div>
+<div class="container">
+	<div class="left-panel">
+        <div class="hotel-image">
+            <img src="${pageContext.request.contextPath}/imgs/${cartItem.room.room_image}"
+             alt="숙박 이미지" class="acc-image">
+        </div>
+	       
+	</div>
+
+	<div class="right-panel">
+		<form:form action="" method="post" modelAttribute="cartItem">
+		<form:hidden path="room.id.roomId" value="${cartItem.room.id.roomId }"/>
+		<form:hidden path="room.id.accommodationId" value="${cartItem.room.id.accommodationId}"/>
+			<table>
+				<tr>
+				<td>날짜 : 
+					<fmt:formatDate value="${cartItem.check_in_date}" pattern="yyyy-MM-dd"/>
+				 ~ 
+					<fmt:formatDate value="${cartItem.check_out_date}" pattern="yyyy-MM-dd"/>
+				<br/><br/>
+				<form:hidden path="check_in_date"/>
+				<form:hidden path="check_out_date"/>
+				</td></tr>
+				
+				<tr><td>${cartItem.room.name}</td></tr>
+				
+				<tr><td>1박 : ${cartItem.room.price_per_night}</td></tr>
+				<tr><td>인원 : ${cartItem.count } 명
+				<form:hidden path="count"/>
+				</td></tr>
+				<tr><td>총 결제 금액 : ${cartItem.total_price}원
+				<form:hidden path="total_price"/>
+				 </td></tr>
+			</table>
+			<br/><br/>
+			<input type="submit" value="수정하기" class="btn"/>
+		</form:form>
+	</div>
+</div>
+</body>
+</html>

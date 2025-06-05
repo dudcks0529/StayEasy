@@ -1,0 +1,38 @@
+package dao;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import model.Cart;
+import model.User;
+
+@Repository
+public class CartDaoImpl implements CartDao {
+	
+	@Autowired
+    private SqlSession sqlSession;
+	
+	@Override
+	public Cart selectCart(String user_id) {
+		return this.sqlSession.selectOne("cartMapper.selectCart", user_id);
+	}
+
+	@Override
+	public Integer getMaxNum() {
+		return this.sqlSession.selectOne("cartMapper.getMaxNum");
+	}
+
+	@Override
+	public void insertCart(Cart cart, User user) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("cart_id", cart.getCart_id());
+		params.put("user_id", user.getUser_id());
+		this.sqlSession.insert("cartMapper.insertCart", params);
+	}
+	
+	
+}

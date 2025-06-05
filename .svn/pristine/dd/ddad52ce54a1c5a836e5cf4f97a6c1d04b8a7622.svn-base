@@ -1,0 +1,84 @@
+package model;
+
+import java.util.ArrayList;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import dao.CartDao;
+
+@Service
+@Scope("session")
+public class Cart {
+	@Autowired
+	private CartDao cartDao;
+	
+	private String id;  //장바구니의 주인 즉, 계정
+	private String code;//상품 번호
+	private Integer num;//상품 갯수
+	
+	private ArrayList<String> codeList = new ArrayList<String>();//상품번호 목록
+	private ArrayList<Integer> numList = new ArrayList<Integer>();//상품갯수 목록
+	
+	public void clearAll() {
+		this.codeList = new ArrayList<String>();//상품번호 목록
+		this.numList = new ArrayList<Integer>();//상품갯수 목록
+	}//장바구니를 비우는 메서드
+	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
+	public Integer getNum() {
+		return num;
+	}
+	public void setNum(Integer num) {
+		this.num = num;
+	}
+	public ArrayList<String> getCodeList() {
+		return codeList;
+	}
+	public void setCodeList(int index, String code) {
+		this.codeList.add(index, code);
+	}//codeList에 상품번호를 넣는 메서드
+	public ArrayList<Integer> getNumList() {
+		return numList;
+	}
+	public void setNumList(int index, Integer num) {
+		this.numList.add(index, num);
+	}
+	
+	
+	
+	public void modifyItem(String code, String id, Integer num) {
+		
+	}//장바구니의 상품 갯수를 수정하는 메서드
+	public void deleteItem(String code, String id) {
+		
+	}//장바구니에서 상품을 삭제하는 메서드
+	
+	public void addCart(String code, Integer num) {
+		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

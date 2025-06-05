@@ -1,0 +1,141 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR" pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>   
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>    
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt"  prefix="fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>이벤트 상세보기</title>
+
+<style type="text/css">
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f2fbff;
+    margin: 0;
+    padding: 40px 0;
+}
+
+h3 {
+    text-align: center;
+    font-size: 30px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    width: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    padding: 30px;
+    box-sizing: border-box;
+}
+
+.card table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.card th, .card td {
+    padding: 15px 10px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.card th {
+    width: 20%;
+    background: #A0E7E5;
+    color: #333;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.card td {
+    background: #f9f9f9;
+    border-radius: 8px;
+    word-break: break-word;
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin: 10px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.card textarea {
+    width: 100%;
+    height: 250px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: none;
+    resize: none;
+    background: #f9f9f9;
+    font-size: 14px;
+    border-radius: 8px;
+    color: #555;
+}
+
+.card textarea:focus {
+    outline: none;
+}
+
+.date-box {
+    background: #e0f7fa;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    color: #333;
+    font-weight: bold;
+}
+</style>
+
+</head>
+<body>
+
+<h3>이벤트 상세보기</h3>
+
+<div class="container">
+    <div class="card">
+        <form:form modelAttribute="event">
+            <table>
+                <tr>
+                    <th>제 목</th>
+                    <td><form:input path="title" readonly="true" style="width:100%; border:none; background:transparent; font-size:16px; color:#333;" /></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <img alt="이벤트 이미지" src="${pageContext.request.contextPath}/imgs/${event.event_image }" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>내 용</th>
+                    <td><form:textarea path="content" readonly="true"/></td>
+                </tr>
+                <tr>
+                    <th>이벤트 기간</th>
+                    <td class="date-box">
+                        <fmt:formatDate value="${event.start_date}" pattern="yyyy-MM-dd" var="start_date"/>
+                        <fmt:formatDate value="${event.end_date}" pattern="yyyy-MM-dd" var="end_date"/>
+                        ${start_date} ~ ${end_date}
+                    </td>
+                </tr>
+            </table>
+        </form:form>
+    </div>
+</div>
+
+</body>
+</html>

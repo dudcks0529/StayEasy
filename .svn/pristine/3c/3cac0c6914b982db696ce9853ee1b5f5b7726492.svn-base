@@ -1,0 +1,50 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>   
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+<div align="center">
+<h3 align="center">문의 사항 보기</h3>
+<div align="center" class="container">
+<form:form action="../inquire/modify.html" method="post" modelAttribute="inquire">
+<table class="table">
+	<tr><th>문의 번호</th><td><form:input path="inquire_id" readonly="true"/></td></tr>
+	<tr><th>제목</th><td><form:input path="title" readonly="true"/></td></tr>
+	<tr><th>내용</th><td><form:textarea path="content" rows="4" cols="50" readonluy="true"/></td></tr>
+	<tr><th>작성일</th><td><fmt:formatDate value="${inquire.i_date}" pattern="yyyy-MM-dd"/></td></tr>
+	<tr><td colspan="2" align="center">
+		<a href="javascript:goReply()">[답변]</a>
+		<a href="../inquire/inquireList.html">[목록]</a></td></tr>
+</table>
+</form:form>
+</div>
+<form name="move" method="post">
+	<input type="hidden" name="inquire_id" value="${inquire.inquire_id }">
+	<input type="hidden" name="parent_id" value="${inquire.inquire_id }">
+	<input type="hidden" name="group_id" value="${inquire.group_id }">
+</form>
+<script type="text/javascript">
+function goReply(){
+	document.move.action="../inquire/inquireReply.html";
+	document.move.submit();
+}
+</script>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

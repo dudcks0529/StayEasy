@@ -1,0 +1,26 @@
+package dao;
+
+import java.util.Date;
+import java.util.List;
+
+import model.Accommodation;
+import model.Category;
+import model.Reservation;
+import model.Room;
+import model.StartEnd;
+import model.User;
+
+public interface AccDao {
+	List<Room> getRoomList(String acc_id);
+	Accommodation getAccDetail(String acc_id);//숙소 번호로 숙소 검색
+	List<Accommodation> getAccListByTypeLoc(StartEnd se, Category category_id, Accommodation location);
+	List<Accommodation> getAccListByType(StartEnd se, Category TYPE);//타입별 숙소 검색
+	Integer getCount(Category category_id);//숙소 갯수 검색
+	Integer getCountByLOC(Category category_id, Accommodation location);
+	List<Room> getRoomId(String acc_id); //숙소번호로 room조회
+	Room getRoomDetail(String acc_id,String roomId); //숙소번호와 roomId로 room조회
+	User getUserId(String id); //loginUser_id로 User_id찾기
+	Integer getMaxNumReserv(); //예약번호Max 검색
+	void insertReserv(Reservation reserv,User user);
+    Reservation getLatestReservation(String Id);
+}

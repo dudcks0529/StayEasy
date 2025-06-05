@@ -1,0 +1,57 @@
+package model;
+
+import java.util.Date;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="bb_cart_tbl")
+public class Cart {
+	
+	@Id
+	private String cart_id;
+	
+	@OneToOne
+	@JoinColumn(name="user_id")
+	private User user;
+	
+	@OneToMany(mappedBy="cart")
+	private Set<CartItem> cartitem;
+
+	public String getCart_id() {
+		return cart_id;
+	}
+
+	public void setCart_id(String cart_id) {
+		this.cart_id = cart_id;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	public Set<CartItem> getCartitem() {
+		return cartitem;
+	}
+
+	public void setCartitem(Set<CartItem> cartitem) {
+		this.cartitem = cartitem;
+	}
+	
+	
+	public void addCart(String reserv_id, String room_id,
+			int count, Date check_in, Date check_out) {
+		
+	}
+	
+}

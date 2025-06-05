@@ -1,0 +1,27 @@
+package dao;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import model.User;
+import model.UserInfo;
+
+@Repository
+
+public class MyInformationDaoImpl implements MyInformationDao {
+	@Autowired
+	private SqlSession session;
+
+	@Override
+	public UserInfo getUser(String user_id) {
+		
+		return this.session.selectOne("informationMapper.getUser",user_id);
+	}
+
+	@Override
+	public void updateMyInfomation(UserInfo userInfo) {
+		this.session.update("informationMapper.updateInfo",userInfo);
+		
+	}
+}

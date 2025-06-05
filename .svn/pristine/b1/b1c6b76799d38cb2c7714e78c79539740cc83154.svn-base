@@ -1,0 +1,40 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>   
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+<h3 align="center">문의 사항 보기</h3>
+<div align="center" class="container">
+<form:form action="../inquire/modify.html" method="post" modelAttribute="inquire">
+<table class="table">
+	<tr><th>문의 번호</th><td><form:input path="inquire_id" readonly="true"/></td></tr>
+	<tr><th>제목</th><td><form:input path="title" /></td></tr>
+	<tr><th>내용</th><td><form:textarea path="content" rows="4" cols="50"/> </td></tr>
+	<tr><th>답변 상태</th><td><form:input path="status" readonly="true"/></td></tr>
+	<tr><th>작성일</th><td><fmt:formatDate value="${inquire.i_date}" pattern="yyyy-MM-dd"/></td></tr>
+
+</table>
+<div class="button-container">
+	<input type="submit" value="수 정" name="BTN"/>
+	<input type="submit" value="삭 제" name="BTN"/>
+</div>
+</form:form>
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

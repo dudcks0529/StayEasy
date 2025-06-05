@@ -1,0 +1,25 @@
+@charset "EUC-KR";
+	.notice-table {
+		width: 80%;
+		border-collapse: collapse;
+		margin: 20px auto;
+		width: 55%;
+		border: 2px solid black;
+	}
+	.notice-table th, .notice-table td {
+		border: none;
+		padding: 5px;
+		text-align: center;
+	}
+	.notice-table th {
+		background-color: #ffccdd;
+		color: black;
+		font-weight: bold;
+	}
+	.notice-table th:nth-child(1), .notice-table td:nth-child(1) {
+        width: 20%;
+    }
+    .notice-table th:nth-child(2), .notice-table td:nth-child(2), 
+    .notice-table th:nth-child(3), .notice-table td:nth-child(3) {
+        width: 40%;
+    }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="inquireMapper">
+
+    <insert id="putInquire" parameterType="model.Inquire">
+        insert into bb_inq_tbl (inquire_id, reservation_id, user_id, content, status, i_date)
+        VALUES (#{inquire_id}, #{reservation.reservation_id}, #{user.user_id}, #{content}, '대기', SYSDATE)
+    </insert>
+
+    <select id="getInquireList" parameterType="model.StartEnd" resultType="model.Inquire">
+        SELECT inquire_id, reservation_id, user_id, content, status, i_date
+           from(
+            SELECT rownum rank, a.*
+            FROM (
+                SELECT inquire_id, reservation_id, user_id, content, status, i_date
+                FROM bb_inq_tbl 
+                ORDER BY inquire_id DESC
+            ) a
+        )
+        WHERE rank > #{start} AND rank <![CDATA[<]]> #{end}
+    </select>
+
+    <select id="getInquire" parameterType="Integer" resultType="model.Inquire">
+		SELECT i.inquire_id, r.reservation_id, u.user_id, content, status, i_date
+		FROM bb_inq_tbl i
+		LEFT JOIN bb_reserv_tbl r ON i.reservation_id = r.reservation_id
+		LEFT JOIN bb_user_tbl u ON i.user_id = u.user_id
+        WHERE i.inquire_id = #{inquire_id}
+    </select>
+
+    <update id="updateInquire" parameterType="model.Inquire">
+        UPDATE bb_inq_tbl
+        SET content = #{content}
+        WHERE inquire_id = #{inquire_id}
+    </update>
+
+    <select id="getInquireCount" resultType="Integer">
+        SELECT COUNT(*) FROM bb_inq_tbl
+    </select>
+
+    <select id="getMaxNum" resultType="Integer">
+        SELECT MAX(inquire_id) FROM bb_inq_tbl
+    </select>
+
+</mapper>

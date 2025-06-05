@@ -1,0 +1,67 @@
+@charset "EUC-KR";
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+	body, html {
+		margin: 0;
+		padding: 0;
+		height: 100%;
+	}
+	.menu-container {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		background-color: white;
+		height: 50px; /* 메뉴바 높이 고정 */
+		position: relative; /* 이미지 절대 위치 기준점 */
+		border-bottom: 1px solid #ddd;
+	}
+	.menu-left {
+		display: flex;
+		margin-left: 30px; /* 왼쪽 여백 설정 */
+	}
+	      
+	.menu-left, .menu-right {
+		display: flex;
+	}
+	.menu-left a:hover, .menu-right a:hover {
+		text-decoration: underline;
+	}
+	.menu-item {
+		padding: 5px 10px;
+		margin-right: 40px; /* 각 메뉴 사이 간격 */
+		font-size: 18px; /* 글자 크기 */
+		font-weight: bold; /* 글자 굵게 */
+	}
+	.menu-item a {
+		text-decoration: none;
+		color: black;
+		font-size: 16px;
+	}
+	.menu-item2 {
+		padding: 5px 10px;
+		margin-right: 60px; /* 각 메뉴 사이 간격 */
+		font-size: 18px; /* 글자 크기 */
+		font-weight: bold; /* 글자 굵게 */
+	}
+	.menu-item2 a {
+		text-decoration: none;
+		color: black;
+		font-size: 16px;
+	}
+	.menu-center {
+		position: absolute;
+		top: 50%; /* 메뉴 높이 절반 */
+		left: 50%;
+		transform: translate(-50%, -10%); /* 수평 중앙 정렬 + 아래로 내려감 */
+		display: flex;
+		align-items: center;
+	}
+	.menu-center img {
+		height: 78px; /* 원하는 이미지 크기 */
+		width: 270px;
+		display: block;
+		transform: translateY(0px); /* 아래로 더 내릴 수도 있음 */
+	}

@@ -1,0 +1,151 @@
+package controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import dao.AccDao;
+import dao.MyInformationDao;
+import model.Accommodation;
+import model.Category;
+import model.LoginUser;
+import model.Room;
+import model.RoomId;
+import model.User;
+import model.UserInfo;
+
+@Controller
+public class AccController {
+	
+    @Autowired
+    private MyInformationDao myInformationDao;
+    @Autowired
+    private AccDao accDao;
+
+    // 숙소 신청 페이지
+    @RequestMapping(value="/acc/putAcc.html", method=RequestMethod.GET)
+    	public ModelAndView putAccmain(HttpSession session) {
+        ModelAndView mav = new ModelAndView("main");
+
+        // 로그인된 사용자 정보 가져오기
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            mav.addObject("BODY", "login.jsp");
+            return mav;
+        }
+
+        // 유저 정보 가져오기
+        UserInfo userInfo = accDao.getUserInfoById(loginUser.getId());
+
+        // 숙소 객체 생성 및 초기화
+        Accommodation accommodation = new Accommodation();
+        accommodation.setCategory(new Category());  
+        User user = new User();
+        user.setUser_id(userInfo.getUser_id()); 
+        user.setUsername(userInfo.getUsername()); 
+        user.setPhone(userInfo.getPhone()); 
+        accommodation.setUser(user);
+
+        // 객실 리스트 초기화 (3개)
+        List<Room> roomList = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            roomList.add(new Room());
+        }
+        accommodation.setRooms(roomList);
+
+        // 모델 추가
+        mav.addObject("BODY", "putAccommodation.jsp");
+        mav.addObject("accommodation", accommodation);
+        return mav;
+    }
+    
+    // 숙소 신청 데이터 저장 (POST 요청)
+    @RequestMapping(value="/acc/submitAcc.html", method=RequestMethod.POST)
+    public ModelAndView submitAcc(@ModelAttribute("accommodation") Accommodation accommodation, HttpSession session) {
+        ModelAndView mav = new ModelAndView("main");
+        
+        if (accommodation == null) {
+            mav.addObject("BODY", "putAccommodation.jsp");
+            mav.addObject("error", "숙소 정보가 전달되지 않았습니다.");
+            return mav;
+        }
+        
+        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+        if (loginUser == null) {
+            mav.addObject("BODY", "login.jsp");
+            mav.addObject("error", "로그인이 필요합니다.");
+            return mav;
+        }
+        UserInfo userInfo = myInformationDao.getUser(loginUser.getId());
+        if (userInfo == null) {
+            mav.addObject("BODY", "error.jsp");
+            mav.addObject("error", "유저 정보를 찾을 수 없습니다.");
+            return mav;
+        }
+
+        // 사용자 정보 자동 입력
+        User user = new User();
+        user.setUser_id(userInfo.getUser_id());  
+        accommodation.setUser(user);  
+
+        // 숙소 ID 설정 (MAX(ID) + 1 방식)
+        int nextAccId = accDao.getNextAccommodationId();
+        accommodation.setAccommodation_id(nextAccId);
+        
+        // 승인 상태 기본값 0 설정
+        accommodation.setApp_status(0);
+       
+        // 설명 필드 저장
+        StringBuilder description = new StringBuilder();
+        if (accommodation.isPetFriendly()) description.append("애견 동반 가능, ");
+        if (accommodation.isFreeParking()) description.append("주차 무료, ");
+        if (accommodation.isWifi()) description.append("와이파이, ");
+        if (accommodation.isBreakfast()) description.append("조식, ");
+        if (accommodation.getCheckin() != null) {
+            description.append("체크인: ").append(accommodation.getCheckin()).append(", ");
+        }
+        if (accommodation.getCheckout() != null) {
+            description.append("체크아웃: ").append(accommodation.getCheckout()).append(", ");
+        }
+        if (accommodation.getContactPhone() != null) {
+            description.append("문의전화: ").append(accommodation.getContactPhone());
+        }
+        if (description.length() > 2) {
+            description.setLength(description.length() - 2);
+        }
+        accommodation.setDescription(description.toString());
+
+        // 숙소 정보 저장
+        accDao.insertAccommodation(accommodation);
+        
+        // 방 리스트가 null이면 초기화
+        if (accommodation.getRooms() == null) {
+            accommodation.setRooms(new ArrayList<>());
+        }
+
+        // 객실 ID 설정 (가장 큰 ID + 1)
+        int nextRoomId = accDao.getNextRoomId();
+
+
+        // 객실 정보 저장
+        for (Room room : accommodation.getRooms()) {
+            if (room.getName() == null || room.getName().trim().isEmpty()) continue;
+
+            room.setId(new RoomId(nextRoomId, accommodation.getAccommodation_id()));
+            room.setAccommodation(accommodation);
+            accDao.insertRoom(room, accommodation.getAccommodation_id());
+            nextRoomId++;
+        }
+
+        mav.addObject("BODY", "putAccommodationUpdate.jsp"); // 성공 페이지로 이동
+        return mav;
+    }
+}

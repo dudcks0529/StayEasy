@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="adminMapper">
+	<!-- 모든 사용자 조회 -->
+    <select id="getAllUsers" resultType="model.User">
+        SELECT * FROM bb_user_tbl
+    </select>
+    
+    <!-- 특정 사용자 정보 조회 -->
+    <select id="getUserInfoById" parameterType="String" resultType="model.UserInfo">
+        SELECT user_id, username, birth, email, phone, addr, gender 
+        FROM bb_user_tbl 
+        WHERE user_id = #{userId}
+    </select>
+
+    <!-- 모든 문의 조회 -->
+    <select id="getAllInquires" resultType="model.Inquire">
+        SELECT * FROM bb_inq_tbl
+    </select>
+
+    <!-- 등록된 숙소 목록 (승인된 숙소) -->
+    <select id="getRegisteredAccommodations" resultType="model.Accommodation">
+        SELECT * FROM bb_acc_tbl WHERE app_status = 1
+    </select>
+
+    <!-- 승인 대기 숙소 목록 -->
+    <select id="getPendingAccommodations" resultType="model.Accommodation">
+        SELECT * FROM bb_acc_tbl WHERE app_status = 0
+    </select>
+
+</mapper>

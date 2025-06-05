@@ -1,0 +1,10 @@
+package dao;
+
+import model.Cart;
+import model.User;
+
+public interface CartDao {
+	Cart selectCart(String user_id); //로그인 시 장바구니 찾기
+	Integer getMaxNum(); //Cart_id max찾기
+	void insertCart(Cart cart, User user); //장바구니 새로 생성
+}

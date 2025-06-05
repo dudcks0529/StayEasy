@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reviewMapper">
+	<select id="getReviewByReserv" resultType="model.Review" parameterType="String">
+		SELECT * FROM bb_review_tbl WHERE reservation_id = #{RESERV}
+	</select>
+
+	<select id="getRoomById" resultType="model.Room" parameterType="model.RoomId">
+		SELECT r.room_id, r.accommodation_id, r.name 
+		FROM bb_room_tbl r 
+		WHERE r.room_id = #{ROOM} AND r.accommodation_id = #{ACC}
+	</select>
+
+
+	
+	<select id="getReservByAcc" resultMap="ReservationMap" parameterType="String">
+		SELECT 
+			r.reservation_id,
+			r.user_id,
+			u.username,
+			r.accommodation_id,
+			r.room_id,
+			rm.name AS roomname,
+			r.check_in_date,
+			r.check_out_date
+		FROM bb_reserv_tbl r
+		JOIN bb_user_tbl u ON r.user_id = u.user_id
+		JOIN bb_room_tbl rm ON r.room_id = rm.room_id
+		WHERE r.accommodation_id = #{ACC}
+	</select>
+
+	<resultMap id="ReservationMap" type="model.Reservation">
+		<id property="reservation_id" column="reservation_id"/>
+		<result property="check_in_date" column="check_in_date"/>
+		<result property="check_out_date" column="check_out_date"/>
+		
+		<!-- User 정보 -->
+		<association property="user" javaType="model.User">
+			<id property="user_id" column="user_id"/>
+			<result property="username" column="username"/>
+		</association>
+		
+		<!-- Room 정보 -->
+		<association property="room" javaType="model.Room">
+			<id property="id.roomId" column="room_id"/> <!-- ✅ 복합키 매핑 -->
+			<id property="id.accommodationId" column="accommodation_id"/> <!-- ✅ 복합키 매핑 -->
+			<result property="name" column="roomname"/>
+		</association>
+	</resultMap>
+
+	
+	<select id="getAccName" resultType="String" parameterType="String">
+		SELECT accname FROM bb_acc_tbl WHERE accommodation_id = #{ACC}
+	</select>
+	
+	<select id="getRatingAVG" resultType="BigDecimal" parameterType="String">
+		SELECT ROUND(AVG(rv.rating), 1) AS avg_rating 
+		FROM bb_acc_tbl a, bb_review_tbl rv, bb_reserv_tbl rs
+		WHERE a.accommodation_id = rs.accommodation_id
+			AND rs.reservation_id = rv.reservation_id
+			AND a.accommodation_id = #{ACC}
+		GROUP BY a.accommodation_id, a.accname
+		ORDER BY avg_rating DESC
+	</select>
+    
+</mapper>

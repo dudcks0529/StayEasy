@@ -1,0 +1,61 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="java.util.*, model.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>이벤트 목록</title>
+<link rel="stylesheet" type="text/css" href="../css/event.css">
+</head>
+<body>
+<c:set var="pageCount" value="${PAGES}"/>
+<div align="center" class="container">
+<c:if test="${sessionScope.loginUser != null && 
+	sessionScope.loginUser.id=='admin' }">
+	<div class="button-container">
+		<button onclick="location.href='../event/eventWrite.html'">작성하기</button>
+	</div>
+</c:if>
+<table border="1" class="table">
+    <tr>
+        <th colspan="2">이벤트</th>
+    </tr>
+    <c:forEach var="event" items="${EVENT}" varStatus="status">
+
+       <tr><td align="center">
+            <a href="${pageContext.request.contextPath}/event/detail.html?event_id=${event.event_id}">
+                <img src="${pageContext.request.contextPath}/upload/${event.event_image}" alt="이벤트 이미지" width="700" height="200"/>
+            </a>
+            <br/>
+            <font size="6">${event.title }</font>
+            <br/>
+            <fmt:formatDate value="${event.start_date}" pattern="yyyy-MM-dd" var="startDate"/>
+            <fmt:formatDate value="${event.end_date}" pattern="yyyy-MM-dd" var="endDate"/>
+            ${startDate} ~ ${endDate}</td></tr>
+    </c:forEach>
+</table>
+<c:set var="currentPage" value="${currentPage}" />
+<c:set var="startPage"
+	value="${currentPage - (currentPage % 10 == 0 ? 10 :(currentPage % 10)) + 1 }" />
+<c:set var="endPage" value="${startPage + 9}"/>	
+<c:set var="pageCount" value="${PAGES }"/>
+<c:if test="${endPage > pageCount }">
+	<c:set var="endPage" value="${pageCount }" />
+</c:if>
+<c:if test="${startPage > 10 }">
+	<a href="../event/eventList.html?pageNo=${startPage - 1 }">[이전]</a>
+</c:if>
+<c:forEach begin="${startPage }" end="${endPage }" var="i">
+	<c:if test="${currentPage == i }"><font size="6"></c:if>
+		<a href="../event/eventList.html?pageNo=${ i }">${ i }</a>
+	<c:if test="${currentPage == i }"></font></c:if>
+</c:forEach>
+<c:if test="${endPage < pageCount }">
+	<a href="../event/eventList.html?pageNo=${endPage + 1 }">[다음]</a>
+</c:if>
+</div>
+</body>
+</html>

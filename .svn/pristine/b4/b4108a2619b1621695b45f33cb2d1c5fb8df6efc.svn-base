@@ -1,0 +1,128 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>숙소 상세화면</title>
+<style type="text/css">
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { padding: 20px; }
+    .container { display: flex; margin-top: 10px;}
+    .left-panel { width: 60%; }
+    .hotel-image img { width: 100%; height: auto; }
+    .hotel-info { margin-top: 10px; font-size: 16px; line-height: 1.5; }
+    .review-btn { background-color: yellow; border: 1px solid black; font-weight: bold; cursor: pointer; margin-top: 10px; padding: 5px; }
+    .right-panel { margin-left: 20px; width: 35%; }
+    .check-info { margin-bottom: 10px;}
+    .acc-image {
+    width: 40%;  /* 전체 폭의 60% */
+    height: auto; /* 비율 유지 */
+    display: block; 
+    margin: 0 auto; /* 가운데 정렬 */
+	}
+	.btn{
+	width: 60px;
+	height: 50px;
+	}
+	.room-image{
+	width: 200px;
+	}
+	.person{
+	width: 40px;
+	}
+    
+</style>
+</head>
+<body>
+<c:if test="${message != null}">
+	<script>
+		alert("${message}");
+	</script>
+</c:if>
+<form:form modelAttribute="reservation">
+<form:hidden path="room.id.accommodationId" value="${ACC.accommodation_id}"/>
+
+<!-- 체크인, 체크아웃, 인원수 선택 -->
+<div align="right" class="check-info">
+<table>
+	<tr>
+		<td>체크인: <form:input path="check_in_date" type="date"/><br/>
+		<font color="red"><form:errors path="check_in_date"/></font></td>
+		
+		<td>인원수: <form:input path="count" type="number" cssClass="person"/>명<br/>
+		<font color="red"><form:errors path="count"/></font></td>
+	</tr>	
+	<tr>
+	   <td> 체크아웃:<form:input  path="check_out_date" type="date"/>
+	</tr>
+	<tr>
+	   <td><font color="red"><form:errors path="check_out_date"/></font></td>
+	</tr>
+</table>
+</div>
+
+<!-- 본문 -->
+<div class="container">
+    <!-- 왼쪽 패널: 호텔 이미지 및 설명 -->
+    <div class="left-panel">
+        <div class="hotel-image">
+            <img src="${pageContext.request.contextPath}/imgs/${ACC.acc_image}"
+             alt="숙박 이미지" class="acc-image">
+        </div>
+        <div class="hotel-info">
+            <h2>${ACC.accname} <button class="review-btn">리뷰 보러가기</button></h2>
+          	  위치: ${ACC.location}<br>
+            ${ACC.description}
+        </div>
+    </div>
+
+	    <!-- 오른쪽 패널: 객실 리스트 -->
+	<div class="right-panel">
+		<c:forEach var="room" items="${RoomList}">
+		
+	    	<table>
+	    		<tr>
+	    			<th rowspan="4">
+	    				<img class="room-image" src="${pageContext.request.contextPath}/imgs/${room.room_image}"
+	    				 alt="방 이미지">
+	    			</th>
+	    		</tr>
+	    		<tr>
+	    			<td>${room.name }</td>
+	    		</tr>
+	    		<tr>
+	    			<td>1박 : ${room.price_per_night }</td>
+	    		</tr>
+	    		<tr>
+	    			<td>
+			    		<button
+			    		 onclick="submitForm('../cart/addCart.html?accId=${ACC.accommodation_id}&roomId=${room.id.roomId }')" 
+			    		 type="button"
+			    		 class="btn">장바구니 담기</button>
+	         		</td>
+	         		<td>
+			    		<button
+			    		 onclick="submitForm('../reserv/reservGo.html?accId=${ACC.accommodation_id}&roomId=${room.id.roomId }')" 
+			    		 type="button"
+			    		 class="btn">예약하기</button>
+	         		</td>
+	         	</tr>
+	    	</table>
+	    
+		</c:forEach>
+	</div>
+</div>
+</form:form>
+</body>
+<script type="text/javascript">
+function submitForm(actionUrl){
+	let form = document.querySelector("form");
+	 // action 변경 후 폼 제출
+    form.action = actionUrl; 
+    form.submit();
+}
+</script>
+</html>

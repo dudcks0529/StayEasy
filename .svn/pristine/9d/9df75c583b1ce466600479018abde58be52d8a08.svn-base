@@ -1,0 +1,25 @@
+@charset "EUC-KR";
+	.event-table {
+		width: 80%;
+		border-collapse: collapse;
+		margin: 20px auto;
+		width: 55%;
+		border: 2px solid black;
+	}
+	.event-table th, .event-table td {
+		border: none;
+		padding: 5px;
+		text-align: center;
+	}
+	.event-table th {
+		background-color: #ffccdd;
+		color: black;
+		font-weight: bold;
+	}
+	.event-table th:nth-child(1), .event-table td:nth-child(1) {
+        width: 20%;
+    }
+    .event-table th:nth-child(2), .event-table td:nth-child(2), 
+    .event-table th:nth-child(3), .event-table td:nth-child(3) {
+        width: 40%;
+    }

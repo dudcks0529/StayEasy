@@ -1,0 +1,68 @@
+package dao;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import model.Reservation;
+import model.Review;
+import model.Room;
+import model.RoomId;
+
+@Repository
+public class ReviewDaoImpl implements ReviewDao {
+	
+
+	@Autowired
+	private SqlSession session;
+
+	@Override
+	public BigDecimal getRatingAVG(String ACC) {
+		return this.session.selectOne("reviewMapper.getRatingAVG", ACC);
+	}
+
+	@Override
+	public String getACCName(String ACC) {
+		return this.session.selectOne("reviewMapper.getAccName", ACC);
+	}
+	
+	@Override
+	public List<Reservation> getReservByAcc(String ACC) {
+		return this.session.selectList("reviewMapper.getReservByAcc", ACC);
+	}
+
+	@Override
+	public List<Review> getReviewByReserv(String RESERV) {
+		List<Review> reviews = this.session.selectList("reviewMapper.getReviewByReserv", RESERV);
+		
+		if (reviews == null || reviews.isEmpty()) {
+			return new ArrayList<>(); // 빈 리스트 반환하여 NullPointerException 방지
+		}
+		
+		// 각 Review 객체에 Room 정보를 추가로 주입
+		for (Review review : reviews) {
+			
+			if (review.getReservation() == null || review.getReservation().getRoom() == null) {
+				continue; // 예약 또는 방 정보가 없으면 건너뛰기
+			}
+			
+			RoomId roomId = review.getReservation().getRoom().getId(); // RoomId 가져오기
+			Room room = this.session.selectOne("reviewMapper.getRoomById", roomId);
+			if (room != null) {
+				review.getReservation().setRoom(room);
+			}
+		}
+		
+		return reviews;
+	}
+	
+	@Override
+	public Room getRoomById(RoomId ROOM) {
+		return this.session.selectOne("reviewMapper.getRoomById", ROOM);
+	}
+	
+}

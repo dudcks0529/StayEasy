@@ -1,0 +1,66 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>  
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="EUC-KR">
+<title>STAYEASY - 숙소 검색</title>
+<link rel="stylesheet" type="text/css" href="../css/accsearch.css">
+</head>
+<body>
+<div class="container">
+<h2>숙소 검색</h2>
+<br/>
+<form action="../search/result.html" method="post">
+	<div class="search-box">
+		<div class="input-group">
+		<label>키워드:</label>
+			<input type="text" name="KEY" placeholder="여행지나 숙소를 입력하세요." required="required"/>
+			<p class="error-message">${errors.accname }</p>
+		</div>
+		<div class="input-group">
+			<label>숙소 유형:</label>
+			<select name="TYPE">
+				<c:forEach var="type" items="${typeList}">
+				<option value="${type}" ${TYPE == type ? 'selected' : ''}>
+					${type == 'MOT' ? '모텔' :
+					type == 'HOT' ? '호텔/리조트' :
+					type == 'PEN' ? '펜션/풀빌라' :
+					type == 'CAM' ? '캠핑/글램핑' :
+					type == 'GUE' ? '게스트 하우스' : '공간 대여'}
+				</option>
+				</c:forEach>
+			</select>
+		</div>
+			
+		<div class="input-group">
+			<label>체크인:</label>
+			<input type="date" name="CHECKIN" required="required">
+			<p class="error-message">${errors.checkin}</p>
+		</div>
+		<div class="input-group">
+			<label>체크아웃:</label>
+			<input type="date" name="CHECKOUT" required="required">
+			<p class="error-message">${errors.checkout}</p>
+		</div>
+		<div class="input-group">
+			<label>인원수:</label>
+			<input type="number" name="capacity" value="${room.capacity }" class="person" min="1" required="required"/> 명
+			<p class="error-message">${errors.capacity}</p>
+		</div>
+		
+		<input type="hidden" name="pageNo" value="1" />
+		
+		<div class="input-group">
+			<input type="submit" value="검색하기"/>
+		</div>
+		
+	</div>
+</form>
+</div>
+</body>
+</html>

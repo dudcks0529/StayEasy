@@ -1,0 +1,132 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>   
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>문의 상세 (관리자)</title>
+<style type="text/css">
+    body {
+        font-family: 'Noto Sans KR', sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+    }
+    .container {
+        width: 60%;
+        margin: 50px auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    h3 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #333;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+    th, td {
+        padding: 15px;
+        border: 1px solid #ddd;
+        text-align: left;
+    }
+    th {
+        width: 25%;
+        background-color: #f9f9f9;
+        color: #444;
+        font-weight: bold;
+    }
+    td {
+        background-color: #fff;
+    }
+    textarea[readonly], input[readonly] {
+        background-color: #f5f5f5;
+        border: none;
+        width: 100%;
+        resize: none;
+    }
+    .button-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .btn {
+        padding: 12px 25px;
+        margin: 0 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        color: white;
+    }
+    .btn-reply {
+        background-color: #28a745;
+    }
+    .btn-reply:hover {
+        background-color: #218838;
+    }
+    .btn-list {
+        background-color: #007bff;
+    }
+    .btn-list:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h3>문의 상세 보기 (관리자)</h3>
+
+    <form:form action="../inquire/modify.html" method="post" modelAttribute="inquire">
+        <!-- 숨겨진 필드 -->
+        <form:hidden path="inquire_id"/>
+        <form:hidden path="parent_id"/>
+        <form:hidden path="group_id"/>
+        <form:hidden path="status"/>
+
+        <table>
+            <tr>
+                <th>문의 번호</th>
+                <td><form:input path="inquire_id" readonly="true"/></td>
+            </tr>
+            <tr>
+                <th>제목</th>
+                <td><form:input path="title" readonly="true"/></td>
+            </tr>
+            <tr>
+                <th>내용</th>
+                <td><form:textarea path="content" rows="5" readonly="true"/></td>
+            </tr>
+            <tr>
+                <th>작성일</th>
+                <td><fmt:formatDate value="${inquire.i_date}" pattern="yyyy-MM-dd"/></td>
+            </tr>
+        </table>
+
+        <div class="button-container">
+            <a href="javascript:goReply()" class="btn btn-reply">답변</a>
+            <a href="../inquire/inquireList.html" class="btn btn-list">목록</a>
+        </div>
+    </form:form>
+</div>
+
+<script type="text/javascript">
+function goReply(){
+    let form = document.forms[0]; // 첫 번째 form 사용
+    form.action = "../inquire/inquireReply.html"; // 답변 페이지로 이동
+    form.submit(); // 제출
+}
+</script>
+
+</body>
+</html>

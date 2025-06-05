@@ -1,0 +1,45 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>    
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+
+<form:form action="../inquire/write.html" method="post" modelAttribute="inquire" >
+<form:hidden path="order_no" />
+<form:hidden path="group_id" />
+<form:hidden path="parent_id" />
+<table class="table">
+	<tr><th>문의 번호</th><td><form:input path="inquire_id" readonly="true"/>
+<tr><th>예약 번호</th><td> 
+    <input type="text" value="${reserv_id}" readonly />
+    <form:hidden path="reservation.reservation_id" />
+</td></tr>
+	<tr><th>작성자</th><td>${sessionScope.loginUser.id}
+		</tr>
+	<tr><th>제목</th><td><form:input path="title" value="${title }"/>
+		<font color="red"><form:errors path="title"/></font></td></tr>	
+	<tr><th>내 용</th><td><form:textarea path="content" rows="8" cols="60"/>
+		<font color="red"><form:errors path="content"/></font></td></tr>
+	<c:if test="${sessionScope.loginUser.id == 'admin'}">
+	<tr><th>답변 상태</th><td>    <form:select path="status">
+        <form:option value="대기">대기</form:option>
+        <form:option value="답변완료">답변완료</form:option>
+    </form:select></td></tr></c:if>
+	<tr><th>작성일</th><td><fmt:formatDate value="${inquire.i_date}" pattern="yyyy-MM-dd"/></td></tr>
+	<tr><td colspan="2" align="center">
+		<input type="submit" value="문의 올리기"/>
+		<input type="reset" value="취 소"/></td></tr>
+</table>
+</form:form>
+</body>
+</html>
+
+

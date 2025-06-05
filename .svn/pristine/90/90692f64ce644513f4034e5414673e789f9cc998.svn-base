@@ -1,0 +1,102 @@
+package controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import dao.CartDao;
+import dao.UserDao;
+import model.CartItem;
+import model.LoginUser;
+import model.User;
+
+@Controller
+@Scope("session")
+public class LoginController {
+	@Autowired
+	private UserDao userDao;
+	
+	@Autowired
+	private CartDao cartDao;
+	
+	@RequestMapping(value="/login/idCheck.html")
+	public ModelAndView idCheck(String USER_ID) { //아이디 중복검사
+		ModelAndView mav = new ModelAndView("idCheckResult");
+		Integer count = this.userDao.idCheck(USER_ID);
+		if(count > 0) {//이미 계정이 존재하는 경우, 즉 계정 중복
+			mav.addObject("DUP","YES");
+		}else {//계정이 존재하지 않는 경우, 즉 사용 가능
+			mav.addObject("DUP","NO");
+		}
+		mav.addObject("ID", USER_ID);
+		return mav;
+	}
+	
+	@RequestMapping(value="/login/registerDo.html",method=RequestMethod.POST)
+	public ModelAndView registerDo(@Valid User user, BindingResult br) {
+		ModelAndView mav = new ModelAndView("main");
+		if(br.hasErrors()) {
+			mav.addObject("BODY","register.jsp");
+			mav.getModel().putAll(br.getModel());
+			return mav;
+		}//어노테이션을 이용한 폼체크
+		this.userDao.putUser(user);
+		mav.addObject("BODY","registerResult.jsp");
+		return mav;
+	}
+	
+	@RequestMapping(value="/login/register.html")
+	public ModelAndView register(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView("main");
+		mav.addObject("BODY","register.jsp");
+		request.setAttribute("user", new User());
+		return mav;
+	}
+	
+	@RequestMapping(value="/login/loginDo.html",method=RequestMethod.POST)
+	public ModelAndView loginDo(@Valid LoginUser loginUser, BindingResult br,
+			HttpSession session) {
+		ModelAndView mav = new ModelAndView("main");
+		if(br.hasErrors()) {
+			mav.addObject("BODY","login.jsp");
+			mav.getModel().putAll(br.getModel());
+			return mav;
+		}//어노테이션을 이용한 폼체크
+		LoginUser user = this.userDao.loginUser(loginUser);
+		mav.addObject("BODY","loginResult.jsp");
+		
+		//로그인 실패
+		if(user == null) {
+			mav.addObject("FAIL","YES");
+		} 
+		
+		//로그인 성공
+		else {
+			session.setAttribute("loginUser", user); //세션에 로그인 유저 저장
+			//DB에서 계정으로 장바구니 테이블을 검색한다. 시작
+			
+			//유저 아이디의 장바구니 항목이 있는지 검색
+			List<CartItem> cartItem = this.cartDao.selectCartItem(user.getId());
+			session.setAttribute("CARTITEM", cartItem);//장바구니를 세션에 저장한다.
+		}
+		return mav;
+	}
+	
+	@RequestMapping(value="/login/login.html")
+	public ModelAndView login(HttpServletRequest request) {
+		ModelAndView mav = new ModelAndView("main");
+		mav.addObject("BODY","login.jsp");
+		request.setAttribute("loginUser",new LoginUser());//login.jsp에 객체(인스턴스)를 주입한다.
+		return mav;
+	}
+}

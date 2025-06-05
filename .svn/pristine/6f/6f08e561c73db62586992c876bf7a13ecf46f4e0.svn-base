@@ -1,0 +1,75 @@
+package controller;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import dao.SearchDao;
+import model.Accommodation;
+import model.Category;
+import model.Reservation;
+import model.Room;
+import model.StartEnd;
+
+@Controller
+public class SearchController {
+
+	@Autowired
+	private SearchDao searchDao;
+	
+	private Date parseDate(String dateStr) { //String -> Date타입 변환 함수
+		try {
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd"); // 날짜 형식 지정
+			return formatter.parse(dateStr); // String을 Date로 변환
+		}catch (ParseException e) {
+			e.printStackTrace();
+			System.out.println("날짜 Date타입 변환 실패");
+			return null; // 변환 실패 시 null 반환
+		}
+	}
+	
+	@RequestMapping(value="/search/result.html", method=RequestMethod.POST)
+	public ModelAndView result(String KEY, String TYPE,
+		String CHECKIN, String CHECKOUT, Integer CAPA, Integer pageNo) {
+		ModelAndView mav = new ModelAndView("main");
+		int currentPage = 1;
+		if(pageNo != null) currentPage = pageNo;
+		int start = (currentPage - 1) * 4;
+		int end = ((currentPage - 1) * 4) + 5;
+		StartEnd se = new StartEnd(); se.setStart(start); se.setEnd(end);
+		Accommodation acc= new Accommodation(); acc.setAccname(KEY); acc.setLocation(KEY);
+		Category cate = new Category(); cate.setCategory_id(TYPE);
+		Room room = new Room(); room.setCapacity(CAPA);
+		Date check_in = parseDate(CHECKIN); Date check_out = parseDate(CHECKOUT);
+		Reservation re = new Reservation(); re.setCheck_in_date(check_in); re.setCheck_out_date(check_out);
+		List<Accommodation> accList = this.searchDao.getAccListByCon(acc, cate, room, re, se);
+		int totalCount = this.searchDao.getAccCountByCon(acc, cate, room, re);
+		String url = "";
+		if(totalCount == 0) url = "noResult.jsp";
+		else url = "searchResult.jsp";
+		int pageCount = totalCount / 4;
+		if(totalCount % 4 != 0) pageCount++;
+		mav.addObject("currentPage",currentPage);
+		mav.addObject("PAGES", pageCount);
+		mav.addObject("accList", accList);
+		mav.addObject("BODY", url);
+		return mav;
+	}
+	
+	@RequestMapping(value="/search/search.html")
+	public ModelAndView index() {
+		ModelAndView mav = new ModelAndView("main");
+		List<String> typeList = Arrays.asList("MOT", "HOT", "PEN", "CAM", "GUE", "SPA");
+		mav.addObject("typeList", typeList);
+		mav.addObject("BODY", "search.jsp");
+		return mav;
+	}
+}

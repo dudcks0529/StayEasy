@@ -1,0 +1,50 @@
+package controller;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import dao.ReviewDao;
+import model.Accommodation;
+import model.Reservation;
+import model.Review;
+
+@Controller
+public class ReviewController {
+	
+	@Autowired
+	private ReviewDao reviewDao;
+	
+	@RequestMapping(value="/review/list.html")
+	public ModelAndView list(String ACC) {
+		ModelAndView mav = new ModelAndView("main");
+		//별점
+		BigDecimal ratingAVG = this.reviewDao.getRatingAVG(ACC);
+		
+		//숙소 이름
+		String accname = this.reviewDao.getACCName(ACC);
+		
+		//예약 정보
+		List<Reservation> reservations = this.reviewDao.getReservByAcc(ACC);
+		
+		// 각 예약에 대한 리뷰 조회 및 Room 정보 주입
+        for (Reservation reservation : reservations) {
+        	if(reservation == null) continue; //null 체크
+        	
+            List<Review> reviews = reviewDao.getReviewByReserv(reservation.getReservation_id());
+            reservation.setReview(reviews);
+        }
+		
+		mav.addObject("reservations", reservations);
+		mav.addObject("rating", ratingAVG);
+		mav.addObject("accname", accname);
+		mav.addObject("BODY", "reviewList.jsp");
+		return mav;
+	}
+}
