@@ -1,0 +1,15 @@
+package dao;
+
+import java.util.List;
+import model.Inquire;
+import model.StartEnd;
+import model.User;
+
+public interface InquireDao {
+    List<Inquire> getInquireList(StartEnd se);
+    Inquire getInquire(Integer inquire_id);
+    Integer getInquireCount();
+    Integer getMaxNum();
+    void putInquire(Inquire inquire);
+	User getUserId(String id); //loginUser_id로 User_id찾기
+}

@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.Accommodation" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>숙소 상세 정보</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        text-align: center;
+    }
+    .container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    .detail-box {
+        text-align: left;
+        margin-bottom: 20px;
+    }
+    .detail-box strong {
+        color: #333;
+    }
+    .approve-btn {
+        background: #28a745;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .approve-btn:hover {
+        background: #218838;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h2>숙소 상세 정보</h2>
+
+    <div class="detail-box">
+        <p><strong>대표 사진:</strong> <img src="${accommodation.acc_image}" alt="숙소 사진"></p>
+        <p><strong>숙소명:</strong> ${accommodation.accname}</p>
+        <p><strong>유형:</strong> ${accommodation.category_id}</p>
+        <p><strong>등록자명:</strong> ${accommodation.username}</p>
+        <p><strong>주소:</strong> ${accommodation.location}</p>
+        <p><strong>전화번호:</strong> ${accommodation.phone}</p>
+        <p><strong>설명:</strong> ${accommodation.description}</p>
+		</div>
+    <h3>방 정보</h3>
+    <table>
+        <tr>
+            <th>방 번호</th>
+            <th>방 이름</th>
+            <th>사진</th>
+            <th>1박 요금</th>
+            <th>최대 인원</th>
+        </tr>
+        <c:forEach var="room" items="${rooms}">
+            <tr>
+                <td>${room.room_id}</td>
+                <td>${room.room_name}</td>
+                <td><img src="${room.room_image}" width="80"></td>
+                <td>${room.room_price} 원</td>
+                <td>${room.room_capacity} 명</td>
+            </tr>
+        </c:forEach>
+    </table>
+
+    <form action="/admin/approveAccommodation.html" method="POST">
+        <input type="hidden" name="accommodationId" value="${accommodation.ACCOMMODATION_ID}" />
+        <button type="submit" class="approve-btn">승인</button>
+    </form>
+</div>
+
+</body>
+</html>

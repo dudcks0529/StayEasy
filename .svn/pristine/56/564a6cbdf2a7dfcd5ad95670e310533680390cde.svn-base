@@ -1,0 +1,25 @@
+package dao;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.omg.CORBA.REBIND;
+
+import model.Reservation;
+import model.Review;
+import model.Room;
+import model.RoomId;
+
+public interface ReviewDao {
+	BigDecimal getRatingAVG(String ACC);
+	
+	String getACCName(String ACC);
+	
+	Room getRoomById(RoomId ROOM);
+	
+	List<Review> getReviewByReserv(String RESERV);
+	List<Reservation> getReservByAcc(String ACC);
+
+}

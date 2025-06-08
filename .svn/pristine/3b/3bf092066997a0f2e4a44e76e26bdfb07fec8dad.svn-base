@@ -1,0 +1,212 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR" pageEncoding="EUC-KR"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>숙소 상세화면</title>
+<!-- jQuery & jQuery UI -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { padding: 20px; }
+    .container { display: flex; gap: 20px; }
+    .left-panel { width: 65%; }
+    .right-panel { width: 35%; overflow-y: auto; max-height: 600px; }
+    .hotel-image img { width: 100%; height: auto; border-radius: 10px; }
+    .room-table { width: 100%; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; overflow: hidden; }
+    .room-image { width: 100%; height: auto; border-bottom: 1px solid #ddd; }
+    .room-table.selected-room { border: 3px solid green; }
+    .btn { padding: 10px 15px; border: none; cursor: pointer; border-radius: 5px; }
+    .btn:hover { opacity: 0.9; }
+    .reserve-btn { background-color: #007BFF; color: white; }
+    .adminbtn { background-color: red; color: white; margin: 0 5px; }
+    .room-table td.center {
+    text-align: center;
+}
+    
+    /* 버튼 감싸는 div */
+.button-wrap {
+    display: flex;
+    justify-content: center; /* 가운데 정렬 */
+    gap: 20px; /* 버튼 사이 여백 */
+    margin-top: 20px;
+}
+
+/* 예약/장바구니 버튼 스타일 */
+#finalReserveBtn, #cart-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+    display: none;
+}
+
+/* 예약하기 버튼 색 */
+#finalReserveBtn {
+    background-color: green;
+    color: white;
+}
+/* 장바구니 버튼 색 */
+#cart-btn {
+    background-color: orange;
+    color: white;
+}
+    .check-info { margin-bottom: 20px; text-align: center; }
+    
+</style>
+</head>
+
+<body>
+<c:if test="${message != null}">
+    <script>alert("${message}");</script>
+</c:if>
+
+<form:form modelAttribute="reservation">
+<form:hidden path="room.id.accommodationId" value="${ACC.accommodation_id}"/>
+<form:hidden path="room.id.roomId" id="roomIdHidden"/>
+
+<!-- 예약 정보 입력 (상단으로 이동) -->
+<div align="center" class="check-info">
+    체크인: <form:input path="check_in_date" type="text" disabled="true"/>
+    체크아웃: <form:input path="check_out_date" type="text" disabled="true"/>
+    인원수: <form:input path="count" type="number" cssClass="person" disabled="true"/>명
+    
+	<div class="button-wrap">    
+	  <button type="button" id="finalReserveBtn" 
+	  	onclick="submitForm('../reserv/reservGo.html')">예약하기</button>
+	  
+	  <button type="button" id="cart-btn"
+	 	onclick="submitForm('../cart/addCart.html')">
+	  	장바구니</button>
+	</div>
+</div>
+
+<!-- 관리자 버튼 -->
+<div align="right">
+    <c:if test="${sessionScope.loginUser.id == 'admin'}">
+        <button class="adminbtn" type="button" onclick="goToPage('../cart/수정하기 매핑')">수정</button>
+        <button class="adminbtn" type="button" onclick="goToPage('../cart/삭제하기 매핑')">삭제</button>
+    </c:if>
+</div>
+
+<!-- 본문 -->
+<div class="container">
+    <div class="left-panel">
+        <div class="hotel-image">
+            <img src="${pageContext.request.contextPath}/imgs/${ACC.acc_image}" alt="숙박 이미지">
+        </div>
+        <h2>${ACC.accname}</h2>
+        <p>위치: ${ACC.location}</p>
+        <p>${ACC.description}</p>
+        <button type="button" class="btn" onclick="goToPage('../review/list.html?ACC=${ACC.accommodation_id}')">리뷰 보러가기</button>
+    </div>
+
+    <div class="right-panel">
+        <c:forEach var="room" items="${RoomList}">
+            <table class="room-table" data-room-id="${room.id.roomId}">
+                <tr><td colspan="2"><img class="room-image" src="${pageContext.request.contextPath}/imgs/${room.room_image}" alt="방 이미지"></td></tr>
+                <tr><td>${room.name}</td><td>최대 인원: ${room.capacity}</td></tr>
+                <tr><td colspan="2">1박 가격: <fmt:formatNumber value="${room.price_per_night}" pattern="#,###"/>원</td></tr>
+                <tr>
+                    <td class="center" colspan="2">
+                    	<button class="btn reserve-btn" type="button">방 선택하기</button>
+                    </td>
+                </tr>
+            </table>
+        </c:forEach>
+    </div>
+</div>
+</form:form>
+
+<script>
+var reservedDates = ${reservedDatesJson};
+let selectedRoomId = null, unavailableDates = [];
+
+$(document).ready(function() { initDatepicker(); });
+
+$('.reserve-btn').click(function() {
+    const roomTable = $(this).closest('.room-table'); //방 선택한 테이블 가져옴
+    selectedRoomId = roomTable.data('room-id'); //테이블의 room_id
+    // 콘솔 확인
+    console.log('선택한 테이블:', roomTable);
+    console.log('선택한 roomId:', selectedRoomId);
+    
+    $('.room-table').removeClass('selected-room'); //초록색 테두리 제거
+    roomTable.addClass('selected-room');
+    $('#finalReserveBtn').show(); //예약하기 버튼 보이기
+    $('#cart-btn').show();  	  //장바구니 버튼 보이기
+    
+ 	// 방 선택 시 입력 가능하게
+    $('#check_in_date').prop('disabled', false);
+    $('#check_out_date').prop('disabled', false);
+    $('#count').prop('disabled', false);
+    
+    //선택한 roomID를 hidden에 넣기
+    $('#roomIdHidden').val(selectedRoomId);
+
+    const checkInDates = reservedDates[selectedRoomId]?.checkInDates.map(d => d.split(' ')[0]) || [];
+    const checkOutDates = reservedDates[selectedRoomId]?.checkOutDates.map(d => d.split(' ')[0]) || [];
+
+    unavailableDates = [];
+    for (let i = 0; i < checkInDates.length; i++) {
+        const start = new Date(checkInDates[i]), end = new Date(checkOutDates[i]);
+        for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+            unavailableDates.push($.datepicker.formatDate('yy-mm-dd', d));
+        }
+    }
+    initDatepicker();
+});
+
+function initDatepicker() {
+    $('input[name="check_in_date"], input[name="check_out_date"]').datepicker('destroy').datepicker({
+        dateFormat: 'yy-mm-dd', minDate: 0,
+        beforeShowDay: d => unavailableDates.includes($.datepicker.formatDate('yy-mm-dd', d)) ? [false] : [true]
+    });
+}
+
+function submitForm(url) { $('form').attr('action', url).submit(); }
+function goToPage(url) { location.href = url; }
+
+//체크인, 체크아웃, 인원수가 비어 있을때 안내 alert창 띄우기
+function submitForm(url) {
+    const checkIn = $('input[name="check_in_date"]').val();
+    const checkOut = $('input[name="check_out_date"]').val();
+    const count = $('input[name="count"]').val();
+
+    // 값이 비어있는 경우 알림 표시
+    if (!checkIn) {
+        alert('체크인 날짜를 선택해주세요.');
+        return;
+    }
+    if (!checkOut) {
+        alert('체크아웃 날짜를 선택해주세요.');
+        return;
+    }
+    
+    if (checkIn === checkOut) {
+        alert('체크인과 체크아웃 날짜가 동일할 수 없습니다.');
+        return;
+    }
+    
+    if (!count || count <= 0) {
+        alert('인원 수를 1명 이상 입력해주세요.');
+        return;
+    }
+
+    // 모두 입력되었을 때만 submit
+    $('form').attr('action', url).submit();
+}
+function goToPage(url) {
+    location.href = url;
+}
+</script>
+</body>
+</html>

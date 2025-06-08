@@ -1,0 +1,232 @@
+package model;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name="bb_acc_tbl")
+public class Accommodation {
+
+    @Id
+    private Integer accommodation_id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @NotEmpty(message="숙소 이름을 입력해주세요")
+    private String accname;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")  
+    private Category category;
+   
+    @NotEmpty(message="위치를 입력해주세요")
+    private String location;
+    @NotEmpty(message="1박당 가격을 입력해주세요")
+    private Integer price_per_night;
+    @NotEmpty(message="설명을 써주세요")
+    private String description;
+    @NotEmpty(message="사진을 삽입해주세요")
+    private String acc_image;
+   @Temporal(TemporalType.DATE)
+   @DateTimeFormat(pattern="yyyy-MM-dd")
+   private Date a_date;
+   @NotNull
+   private int app_status;
+   
+   @OneToMany(mappedBy = "accommodation")
+   private List<Room> rooms = new ArrayList<>();
+// ✅ 숙소 옵션 추가
+   private boolean petFriendly;  // 애견 동반 가능 여부
+   private boolean freeParking;  // 무료 주차 가능 여부
+   private boolean wifi;         // 와이파이 여부
+   private boolean breakfast;    // 조식 여부
+   // ✅ 체크인, 체크아웃, 문의전화 추가
+   @NotEmpty(message="체크인 시간을 입력해주세요")
+   private String checkin;
+   @NotEmpty(message="체크아웃 시간을 입력해주세요")
+   private String checkout;
+   @NotEmpty(message="문의전화를 입력해주세요")
+   private String contactPhone;
+
+//   @OneToMany(mappedBy = "accommodation")
+//   private Set<Cart> cart;
+//   @OneToMany(mappedBy = "accommodation")
+//   private Set<Reservation> reserv;
+//   
+//   
+//
+//    public Set<Reservation> getReserv() {
+//	return reserv;
+//    }
+//
+//    public void setReserv(Set<Reservation> reserv) {
+//	this.reserv = reserv;
+//    }
+
+	public List<Room> getRooms() {
+      return rooms;
+   }
+
+   public void setRooms(List<Room> rooms) {
+      this.rooms = rooms;
+   }
+
+//   public Set<Cart> getCart() {
+//      return cart;
+//   }
+//
+//   public void setCart(Set<Cart> cart) {
+//      this.cart = cart;
+//   }
+
+   // Getter & Setter
+    public Integer getAccommodation_id() {
+        return accommodation_id;
+    }
+   
+    public void setAccommodation_id(Integer accommodation_id) {
+        this.accommodation_id = accommodation_id;
+    }
+   
+    public String getAccname() {
+        return accname;
+    }
+   
+    public void setAccname(String accname) {
+        this.accname = accname;
+    }
+   
+    public String getLocation() {
+        return location;
+    }
+   
+    public void setLocation(String location) {
+        this.location = location;
+    }
+   
+    public User getUser() {
+        return user;
+    }
+   
+    public void setUser(User user) {
+        this.user = user;
+    }
+   
+    public Category getCategory() {
+        return category;
+    }
+   
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+   public Integer getPrice_per_night() {
+      return price_per_night;
+   }
+
+   public void setPrice_per_night(Integer price_per_night) {
+      this.price_per_night = price_per_night;
+   }
+
+   public String getDescription() {
+      return description;
+   }
+
+   public void setDescription(String description) {
+      this.description = description;
+   }
+
+   public String getAcc_image() {
+      return acc_image;
+   }
+
+   public void setAcc_image(String acc_image) {
+      this.acc_image = acc_image;
+   }
+
+   public Date getA_date() {
+      return a_date;
+   }
+
+   public void setA_date(Date a_date) {
+      this.a_date = a_date;
+   }
+
+   public int getApp_status() {
+      return app_status;
+   }
+
+   public void setApp_status(int app_status) {
+      this.app_status = app_status;
+   }
+   public boolean isPetFriendly() {
+       return petFriendly;
+   }
+
+   public void setPetFriendly(boolean petFriendly) {
+       this.petFriendly = petFriendly;
+   }
+
+   public boolean isFreeParking() {
+       return freeParking;
+   }
+
+   public void setFreeParking(boolean freeParking) {
+       this.freeParking = freeParking;
+   }
+
+   public boolean isWifi() {
+       return wifi;
+   }
+
+   public void setWifi(boolean wifi) {
+       this.wifi = wifi;
+   }
+
+   public boolean isBreakfast() {
+       return breakfast;
+   }
+
+   public void setBreakfast(boolean breakfast) {
+       this.breakfast = breakfast;
+   }
+   public String getCheckin() {
+       return checkin;
+   }
+
+   public void setCheckin(String checkin) {
+       this.checkin = checkin;
+   }
+
+   public String getCheckout() {
+       return checkout;
+   }
+
+   public void setCheckout(String checkout) {
+       this.checkout = checkout;
+   }
+
+   public String getContactPhone() {
+       return contactPhone;
+   }
+
+   public void setContactPhone(String contactPhone) {
+       this.contactPhone = contactPhone;
+   }
+
+}

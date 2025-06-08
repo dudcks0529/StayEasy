@@ -1,0 +1,105 @@
+package controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import dao.AccDao;
+import dao.CartDao;
+import model.Accommodation;
+import model.CartItem;
+import model.LoginUser;
+import model.Reservation;
+import model.Room;
+import model.User;
+
+@Controller
+public class CartController {
+	
+	@Autowired
+	private AccDao accDao;
+	@Autowired
+	private CartDao cartDao;
+	
+	@RequestMapping(value="/cart/cartList.html")
+	public ModelAndView cartList(HttpSession session) {
+		ModelAndView mav = new ModelAndView("main");
+		LoginUser user = (LoginUser)session.getAttribute("loginUser");
+		if(user == null) {
+			mav.addObject(new LoginUser());
+			mav.addObject("BODY","login.jsp");
+			return mav;
+		}
+		List<CartItem> cartList = this.cartDao.selectCartItem(user.getId());
+		String room_id = "";
+		for(CartItem item : cartList) {
+		    if (item.getRoom() == null) {
+		        System.out.println("🚨 Room 객체가 NULL입니다! CartItem ID: " + item.getCartitem_id());
+		    } else {
+		        System.out.println("✅ Room ID: " + item.getRoom().getId().getRoomId());
+		    }
+		}
+
+		mav.addObject("cartList",cartList);
+		mav.addObject("BODY","cartList.jsp");
+		return mav;
+	}
+
+	@RequestMapping(value="/cart/addCart.html") //장바구니에 추가
+	public ModelAndView addCart(@Valid Reservation reservation, BindingResult br,
+			HttpSession session, String accId, String roomId) {
+		ModelAndView mav = new ModelAndView("main");
+		LoginUser user = (LoginUser)session.getAttribute("loginUser");
+		//로그인을 안 한 경우, 로그인 창을 띄운다.
+		if(user == null) {
+			mav.addObject(new LoginUser());
+			mav.addObject("BODY","login.jsp");
+			return mav;
+		}
+		else { //로그인을 한 경우
+			
+		//폼 체크 진행시 객체 유지
+		Accommodation acc = this.accDao.getAccDetail(accId);
+		List<Room> list = this.accDao.getRoomId(accId);
+		Room room = this.accDao.getRoomDetail(accId, roomId);
+		mav.addObject("roomInfo",room);
+		mav.addObject("reservation", reservation);
+		mav.addObject("ACC",acc);
+		mav.addObject("RoomList", list);
+		//어노테이션을 이용한 폼체크
+		if(br.hasErrors()) {
+			mav.addObject("BODY","accDetail.jsp");
+			mav.getModel().putAll(br.getModel());
+			return mav;
+		}
+		
+		//총 계산금액 설정
+		int total_price =  room.getPrice_per_night() * reservation.getCount();
+		reservation.setTotal_price(total_price);
+		reservation.setRoom(room);
+		
+		//장바구니에 추가
+		CartItem cartItem = new CartItem();
+		Integer num = this.cartDao.getMaxCartId();
+		if(num == null) {
+			num = 1;
+		}else {
+			num += 1;
+		}
+		String maxNum = Integer.toString(num);
+		cartItem.setCartitem_id(maxNum);
+		User uuser = this.accDao.getUserId(user.getId());
+		//db에 장바구니 항목 삽입
+		this.cartDao.insertCartItem(cartItem, reservation, uuser);
+		mav.addObject("BODY","addCartResult.jsp");
+		return mav;
+		}
+	}
+}

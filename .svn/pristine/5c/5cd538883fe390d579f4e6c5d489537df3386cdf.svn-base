@@ -1,0 +1,57 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html>
+<menu>
+	<%@ include file="./menu_header.jsp" %>
+</menu>
+<head>
+<meta charset="EUC-KR">
+<title>메인화면</title>
+<link rel="stylesheet" type="text/css" href="../css/mainnotice.css">
+<link rel="stylesheet" type="text/css" href="../css/mainevent.css">
+<link rel="stylesheet" type="text/css" href="../css/footer.css">
+</head>
+<body>
+<div class="content">
+<c:set var="body" value="${param.BODY }"/>
+<c:choose>
+	<c:when test="${ BODY != null }">
+		<jsp:include page="${ BODY }"/>
+	</c:when>
+	
+	<c:otherwise>
+<div align="center">
+<div style="font-weight: bold; font-size: 30px;">
+<a href="../notice/notice.html">공지사항</a>
+</div>
+<table class="notice-table">
+<tr><th>글번호</th><th>제목</th><th>작성일</th></tr>
+	<c:forEach var="dto1" items="${NOTICES}">
+		<tr><td>${dto1.notice_id }</td>
+			<td><a href="../notice/detail.html?notice_id=${dto1.notice_id }">${dto1.title }</a></td>
+			<td><fmt:formatDate value="${dto1.n_date}" pattern="yyyy/MM/dd HH:mm"/></td></tr>
+	</c:forEach>
+</table> <br/><br/><br/>
+
+<div style="font-weight: bold; font-size: 30px;">
+<a href="../event/eventList.html">이벤트</a>
+</div>
+<table class="event-table">
+<tr><th>글번호</th><th>제목</th><th>작성일</th></tr>
+	<c:forEach var="dto2" items="${EVENTS}">
+		<tr><td>${dto2.event_id }</td>
+			<td><a href="../event/detail.html?event_id=${dto2.event_id }">${dto2.title }</a></td>
+			<td><fmt:formatDate value="${dto2.e_date}" pattern="yyyy/MM/dd HH:mm"/></td></tr>
+	</c:forEach>
+</table>
+</div>
+	</c:otherwise>
+</c:choose>
+</div>
+<%@ include file="./footer.jsp" %>
+
+</body>
+</html>

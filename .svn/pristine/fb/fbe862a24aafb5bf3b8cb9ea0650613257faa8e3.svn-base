@@ -1,0 +1,356 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="java.util.*, model.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>숙소 신청하기</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" type="text/css" href="../css/backbutton.css">
+
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* 컨테이너 전체 박스 */
+.container {
+    max-width: 1200px;
+    margin: 50px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+}
+
+/* 제목 */
+.header-title {
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* 좌우 나누는 flex 컨테이너 */
+.content {
+    display: flex;
+    flex-direction: row; /* 핵심! 위아래가 아니라 옆으로 배치 */
+    justify-content: space-between;
+    gap: 40px;
+    width: 100%;
+    flex-wrap: wrap; /* 작은 화면에서도 자동 줄바꿈 */
+}
+
+/* 왼쪽/오른쪽 박스 공통 */
+.left, .right {
+    flex: 1;
+    min-width: 400px;
+}
+
+/* 입력 필드 박스 */
+.input-box {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+input[type="text"], input[type="file"], input[type="number"], select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+input[name$="_name"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+
+/* 숙소 대표사진 영역 */
+.photo-section {
+    margin-top: 25px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* 방 정보 블럭 */
+.room-section {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 18px;
+    margin-top: 20px;
+    background: #fdfdfd;
+    text-align: left;
+}
+
+.room-section h4 {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+/* 신청하기 버튼 위치 */
+.form-footer {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* 버튼 디자인 */
+.submit-btn {
+    background-color: #FF6699;
+    color: white;
+    padding: 12px 26px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(255, 102, 153, 0.3);
+}
+
+.submit-btn:hover {
+    background-color: #FF3366;
+    box-shadow: 0 6px 12px rgba(255, 51, 102, 0.5);
+    transform: translateY(-2px);
+}
+.delete-room-btn {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 18px;
+    color: #999;
+    cursor: pointer;
+    margin-top: -8px;
+}
+.delete-room-btn:hover {
+    color: #e74c3c;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-title">숙소 신청하기</div>
+	<a href="../mypage/mypageMain.html" class="back-button">
+	    <i class="fas fa-arrow-left"></i>
+	</a>
+    <form:form modelAttribute="accommodation" action="../acc/submitAcc.html" id="accForm"
+        method="post" enctype="multipart/form-data">
+        <div class="content">
+            <!-- 왼쪽: 숙소 정보 -->
+            <div class="left">
+                <div class="input-box">
+                    <label>유형</label>
+                    <form:select path="category.category_id">
+                        <form:option value="MOT">모텔</form:option>
+                        <form:option value="HOT">호텔/리조트</form:option>
+                        <form:option value="PEN">펜션/풀빌라</form:option>
+                        <form:option value="CAM">캠핑/글램핑</form:option>
+                        <form:option value="GUE">게스트 하우스</form:option>
+                        <form:option value="SPA">공간대여</form:option>
+                    </form:select>
+                </div>
+
+                <div class="input-box">
+                    <label>숙소명</label>
+                    <form:input path="accname" placeholder="숙소명을 입력하세요"/>
+                </div>
+
+                <div class="input-box">
+                    <label>등록자명</label>
+                    <form:input path="user.username" readonly="true"/>
+                </div>
+
+                <div class="input-box">
+                    <label>주소</label>
+                    <form:input path="location" placeholder="주소를 입력하세요"/>
+                </div>
+
+                <div class="input-box">
+                    <label>전화번호</label>
+                    <form:input path="user.phone" readonly="true"/>
+                </div>
+
+                <div class="input-box">
+                    <label>숙소 설명</label>
+                    <form:input path="description" placeholder="체크인 16시 이후, 체크아웃 12시 이전, 애견동반 가능 등"/>
+                </div>
+
+                <div class="photo-section">
+                    <label>숙소 대표 사진</label>
+                    <input type="file" name="main_photo" id="main_photo">
+                </div>
+            </div>
+
+            <!-- 오른쪽: 방 정보 -->
+            <div class="right">
+                <div class="room-section" id="room1-section">
+                    <h4>방 1 </h4>
+                    <label>방1 사진</label>
+                    <input type="file" name="room1_photo">
+                    <input name="room1_name" placeholder="방 이름 입력" />
+                    <input name="room1_price_per_night" placeholder="1박 가격 입력" type="number" step="1000"/>
+                    <label>최대 인원:
+                        <input type="number" name="room1_capacity" min="1" max="20" value="1" />
+                    </label>
+                </div>
+
+				<div class="room-section" id="room2-section" data-room-visible="false" style="display: none;">
+    				<h4>방 2 <button type="button" class="delete-room-btn" onclick="deleteRoom(2)">×</button></h4>
+                    <label>방2 사진</label>
+                    <input type="file" name="room2_photo">
+                    <input name="room2_name" placeholder="방 이름 입력" />
+                    <input name="room2_price_per_night" placeholder="1박 가격 입력" type="number" step="1000"/>
+                    <label>최대 인원:
+                        <input type="number" name="room2_capacity" min="1" max="20" value="1" />
+                    </label>
+                </div>
+
+                <div class="room-section" id="room3-section" data-room-visible="false" style="display: none;">
+    				<h4>방 3 <button type="button" class="delete-room-btn" onclick="deleteRoom(3)">×</button></h4>
+                    <label>방3 사진</label>
+                    <input type="file" name="room3_photo">
+                    <input name="room3_name" placeholder="방 이름 입력" />
+                    <input name="room3_price_per_night" placeholder="1박 가격 입력" type="number" step="1000"/>
+                    <label>최대 인원:
+                        <input type="number" name="room3_capacity" min="1" max="20" value="1" />
+                    </label>
+                </div>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <button type="button" class="submit-btn" id="add-room-btn">+ 방 추가하기</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 가운데 하단: 신청 버튼 -->
+        <div class="form-footer">
+            <button type="submit" class="submit-btn">신청하기</button>
+        </div>
+    </form:form>
+</div>
+</body>
+</html>
+
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    const addRoomBtn = document.getElementById("add-room-btn");
+
+    // 방 추가 버튼
+    addRoomBtn.addEventListener("click", function () {
+        const rooms = [
+            document.getElementById("room2-section"),
+            document.getElementById("room3-section")
+        ];
+
+        for (let i = 0; i < rooms.length; i++) {
+            if (rooms[i].getAttribute("data-room-visible") === "false") {
+                rooms[i].style.display = "block";
+                rooms[i].style.opacity = "1";
+                rooms[i].setAttribute("data-room-visible", "true");
+
+                updateAddButtonState();
+                break;
+            }
+        }
+    });
+
+    // 신청 시 유효성 검사
+    document.getElementById("accForm").addEventListener("submit", function (event) {
+        const mainPhoto = document.getElementById("main_photo");
+        if (!mainPhoto.value) {
+            alert("숙소 대표 사진을 선택해 주세요.");
+            event.preventDefault();
+            return;
+        }
+
+        const roomSections = document.querySelectorAll('.room-section[data-room-visible="true"]');
+        for (let section of roomSections) {
+            const photo = section.querySelector("input[type='file']");
+            const name = section.querySelector("input[name$='_name']");
+            const price = section.querySelector("input[name$='_price_per_night']");
+            const capacity = section.querySelector("input[name$='_capacity']");
+
+            if (!photo.value || !name.value.trim() || !price.value.trim() || !capacity.value.trim()) {
+                alert("모든 방 정보(사진, 이름, 가격, 인원)를 입력해 주세요.");
+                event.preventDefault();
+                return;
+            }
+        }
+    });
+
+    // 삭제 함수
+    window.deleteRoom = function (roomNumber) {
+        if (roomNumber === 1) {
+            alert("방 1은 삭제할 수 없습니다.");
+            return;
+        }
+
+        const section = document.getElementById("room" + roomNumber + "-section");
+
+        if (section.getAttribute("data-room-visible") === "false") {
+            alert("이미 삭제된 방입니다.");
+            return;
+        }
+
+        if (!confirm("정말 이 방을 삭제하시겠습니까?")) return;
+
+        section.style.transition = "opacity 0.4s ease";
+        section.style.opacity = "0";
+
+        setTimeout(() => {
+            section.style.display = "none";
+            section.setAttribute("data-room-visible", "false");
+
+            // 입력값 초기화
+            const inputs = section.querySelectorAll("input, select");
+            inputs.forEach(el => {
+                if (el.type !== "hidden") el.value = "";
+            });
+
+            // 버튼 다시 활성화
+            updateAddButtonState();
+        }, 400);
+    };
+
+    // 버튼 상태 갱신
+    function updateAddButtonState() {
+        const visibleRooms = document.querySelectorAll('.room-section[data-room-visible="true"]').length;
+        if (visibleRooms >= 3) {
+            addRoomBtn.disabled = true;
+            addRoomBtn.innerText = "더 이상 추가할 수 없습니다";
+        } else {
+            addRoomBtn.disabled = false;
+            addRoomBtn.innerText = "+ 방 추가하기";
+        }
+    }
+
+    // 초기 버튼 상태 세팅
+    updateAddButtonState();
+});
+</script>
+
+
+</html>

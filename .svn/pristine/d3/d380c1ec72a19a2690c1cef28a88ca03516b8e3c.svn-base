@@ -1,0 +1,58 @@
+package dao;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import model.Inquire;
+import model.Reservation;
+import model.StartEnd;
+import model.User;
+
+@Repository
+public class InquireDaoImpl implements InquireDao {
+
+    @Autowired
+    private SqlSession sqlSession;
+
+
+	@Override
+	public User getUserId(String id) {
+		return this.sqlSession.selectOne("inquireMapper.getUserId",id);
+	}
+    
+    @Override
+    public List<Inquire> getInquireList(StartEnd se,Reservation reservation_id, User user_id) {   
+    	Map<String, Object> params = new HashMap<>();
+		params.put("start", se.getStart());
+		params.put("end", se.getEnd());
+		params.put("RESERV", reservation_id.getReservation_id());
+		params.put("USER", user_id.getUser_id());
+        return this.sqlSession.selectList("inquireMapper.getInquireList", params);
+    }
+    
+    @Override
+    public Integer getInquireCount(Reservation reservation_id) {
+        return this.sqlSession.selectOne("inquireMapper.getInquireCount", reservation_id);
+    }
+
+    @Override
+    public Inquire getInquireDetail(Integer inquire_id) {
+        return this.sqlSession.selectOne("inquireMapper.getInquireDetail", inquire_id);
+    }
+
+
+    @Override
+    public Integer getMaxNum() {
+        return this.sqlSession.selectOne("inquireMapper.getMaxNum");
+    }
+
+    @Override
+    public void putInquire(Inquire inquire) {
+        this.sqlSession.insert("inquireMapper.putInquire", inquire);
+    }
+}

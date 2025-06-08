@@ -1,0 +1,54 @@
+package model;
+
+import java.util.Date;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+@Entity
+@Table(name="bb_rep_tbl")
+public class Reply {
+   @Id
+   private Integer reply_id;
+   @ManyToOne
+   @JoinColumn(name="inquire_id")
+   private Inquire inquire;
+   private String response;
+   @Temporal(TemporalType.DATE)
+   @DateTimeFormat(pattern="yyyy-MM-dd")
+   private Date l_date;
+   
+   
+   public Integer getReply_id() {
+      return reply_id;
+   }
+   public void setReply_id(Integer reply_id) {
+      this.reply_id = reply_id;
+   }
+   public Inquire getInquire() {
+      return inquire;
+   }
+   public void setInquire(Inquire inquire) {
+      this.inquire = inquire;
+   }
+   public String getResponse() {
+      return response;
+   }
+   public void setResponse(String response) {
+      this.response = response;
+   }
+   public Date getL_date() {
+      return l_date;
+   }
+   public void setL_date(Date l_date) {
+      this.l_date = l_date;
+   }
+   
+}

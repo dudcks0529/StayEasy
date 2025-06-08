@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="reservMapper">
+	
+	<select id="getReservDate" parameterType="model.Room" resultType="model.Datee">
+	select check_in_date, check_out_date from bb_reserv_tbl 
+	where room_id = #{id.roomId} and accommodation_id = #{id.accommodationId}
+	</select>
+
+	<insert id="insertReserv" parameterType="map">
+    INSERT INTO bb_reserv_tbl 
+    (reservation_id, user_id, accommodation_id,
+     room_id, check_in_date, check_out_date, total_price, count, r_date)
+    VALUES (#{reservation_id}, #{user_id},#{accommodation_id},
+    #{room_id}, #{check_in_date}, #{check_out_date}, #{total_price}, #{count}, #{r_date})
+	</insert>
+	
+	
+	<select id="getMaxNumReserv" resultType="Integer">
+	select max(reservation_id) from bb_reserv_tbl	
+	</select>
+
+	<select id="getUserId" parameterType="String" resultType="model.User">
+	select user_id from bb_user_tbl where user_id=#{id}
+	</select>
+
+	<select id="getRoomList" parameterType="String" resultType="model.Room">
+	select * from bb_room_tbl where
+	accommodation_id = #{accommodation_id}
+	</select>
+	
+	<select id="getAccDetail" parameterType="String" resultType="model.Accommodation">
+	select * from bb_acc_tbl where 
+	accommodation_id = #{accommodation_id}
+	</select>
+	
+	<select id="getAccListByType" parameterType="map" resultType="model.Accommodation">
+		select *
+		from (select rownum rank, a.*
+		        from(
+		        	select acc.* 
+			     	from bb_acc_tbl acc, bb_cate_tbl cat
+			     	where acc.category_id = cat.category_id
+			     	and acc.category_id = #{TYPE}
+			     	order by acc.accommodation_id desc) a)
+		where rank > #{start} and rank <![CDATA[<]]> #{end}	
+	</select>
+	
+	<select id="getAccListByTypeLoc" parameterType="map" resultType="model.Accommodation">
+		select *
+		from (select rownum rank, a.*
+		        from(
+		        	select acc.* 
+			     	from bb_acc_tbl acc, bb_cate_tbl cat
+			     	where acc.category_id = cat.category_id
+			     	and acc.category_id = #{TYPE}
+			     	and acc.location like '%' || #{LOC} || '%'
+			     	order by acc.accommodation_id desc) a)
+		where rank > #{start} and rank <![CDATA[<]]> #{end}	
+	</select>
+	
+	<select id="getMaxNum" resultType="Integer">
+		select max(accommodation_id) from bb_acc_tbl
+	</select>
+	
+	<select id="getAccCount" parameterType="String" resultType="Integer">
+		select count(*) from bb_acc_tbl where category_id = #{category_id}
+	</select>
+
+	<select id="getAccCountByLOC" parameterType="map" resultType="Integer">
+		select count(*) from bb_acc_tbl 
+		where category_id = #{category_id} and location like '%' || #{location} || '%'
+	</select>
+
+	<select id="getLatestReservation" parameterType="String" resultType="model.Reservation">
+	SELECT *
+	FROM (
+	    SELECT *
+	    FROM bb_reserv_tbl
+	    WHERE user_id = #{user_id}
+	    ORDER BY r_date DESC
+	) WHERE ROWNUM = 1
+	</select>
+<select id="getReservationByInquireId" parameterType="Integer" resultType="model.Reservation">
+    SELECT r.*
+    FROM bb_reserv_tbl r
+    JOIN bb_inq_tbl i ON r.reservation_id = i.reservation_id
+    WHERE i.inquire_id = #{inquire_id}
+</select>
+
+</mapper>

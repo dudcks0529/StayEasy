@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="accUpdateMapper">
+
+	<insert id="insertRoomUpdate" parameterType="model.RoomUpdate">
+	insert into bb_room_update_tbl
+	values(#{room_request_id}, #{room.id.roomId}, #{room.id.accommodationId},
+	#{user.user_id},#{name},#{price_per_night},#{capacity},#{room_image},
+	#{availability},sysdate,#{room_approval_status},#{room_rejection_reason})
+	</insert>
+	
+	<insert id="insertAccUpdate" parameterType="model.AccUpdate">
+	insert into bb_acc_update_tbl
+	values (#{acc_request_id},#{accommodation.accommodation_id},#{user.user_id},
+	#{accname},#{category.category_id},
+	#{location},#{price_per_night},#{description},
+	#{acc_image},sysdate,#{acc_approval_status},#{acc_rejection_reason})
+	</insert>
+	
+	<select id="getMaxAccRequest" resultType="Integer">
+	select max(acc_request_id) from bb_acc_update_tbl
+	</select>
+	
+	<select id="getMaxRoomRequest" resultType="Integer">
+	select max(room_request_id) from bb_room_update_tbl
+	</select>
+	
+</mapper>

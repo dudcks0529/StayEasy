@@ -1,0 +1,204 @@
+package dao;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceUnit;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import model.Accommodation;
+import model.Category;
+import model.Reservation;
+import model.Room;
+import model.RoomId;
+import model.StartEnd;
+import model.User;
+import model.UserInfo;
+
+@Repository
+public class AccDaoImpl implements AccDao {
+	
+
+	@Autowired
+	private SqlSession sqlSession;
+	
+	private EntityManagerFactory emf;
+	
+	@PersistenceUnit
+	public void setEmf(EntityManagerFactory emf) {
+		this.emf = emf;
+	}
+	
+	@Override
+	public List<Room> getRoomList(String acc_id) {
+		return this.sqlSession.selectList("reservMapper.getRoomList", acc_id);
+	}
+
+	@Override
+	public Integer getCount(Category category_id) {
+		return this.sqlSession.selectOne("reservMapper.getAccCount", category_id);
+	}
+	
+	@Override
+	public Integer getCountByLOC(Category category_id, Accommodation location) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("category_id", category_id.getCategory_id());
+		params.put("location", location.getLocation());
+		return this.sqlSession.selectOne("reservMapper.getAccCountByLOC", params);
+	}
+
+	@Override
+	public List<Accommodation> getAccListByTypeLoc(StartEnd se, Category category_id, Accommodation location) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("start", se.getStart());
+		params.put("end", se.getEnd());
+		params.put("TYPE", category_id.getCategory_id());
+		params.put("LOC", location.getLocation());
+		return this.sqlSession.selectList("reservMapper.getAccListByTypeLoc", params);
+	}
+	
+	@Override
+	public List<Accommodation> getAccListByType(StartEnd se, Category TYPE) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("start", se.getStart());
+		params.put("end", se.getEnd());
+		params.put("TYPE", TYPE.getCategory_id());
+		return this.sqlSession.selectList("reservMapper.getAccListByType", params);
+	}
+
+	@Override
+	public Accommodation getAccDetail(String acc_id) {
+		return this.sqlSession.selectOne("reservMapper.getAccDetail", acc_id);
+	}
+
+	@Override
+	public List<Room> getRoomId(String acc_id) {
+		EntityManager em = this.emf.createEntityManager();
+		List<Room> list = em.createQuery(
+			    "SELECT r FROM Room r WHERE r.accommodation.accommodation_id = :acc_id"
+				, Room.class).setParameter("acc_id", acc_id)
+			    .getResultList();
+		return list;
+	}
+
+	@Override
+	public Room getRoomDetail(String acc_id, String roomId) {
+		EntityManager em = this.emf.createEntityManager();
+		Room roomInfo = em.createQuery(
+				"SELECT r FROM Room r WHERE r.accommodation.accommodation_id = :acc_id "
+				+ "AND r.id.roomId = :room_id",Room.class)
+				.setParameter("acc_id", acc_id).setParameter("room_id", roomId)
+				.getSingleResult();
+		return roomInfo;
+	}
+
+	@Override
+	public User getUserId(String id) {
+		return this.sqlSession.selectOne("reservMapper.getUserId",id);
+	}
+
+	@Override
+	public Integer getMaxNumReserv() {
+		return this.sqlSession.selectOne("reservMapper.getMaxNumReserv");
+	}
+	
+	@Override
+	public void insertReserv(Reservation reserv,User user) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("reservation_id", reserv.getReservation_id());
+		params.put("user_id", user.getUser_id());
+		params.put("accommodation_id", reserv.getRoom().getId().getAccommodationId());
+		params.put("room_id", reserv.getRoom().getId().getRoomId());
+		params.put("check_in_date", reserv.getCheck_in_date());
+		params.put("check_out_date", reserv.getCheck_out_date());
+		params.put("total_price", reserv.getTotal_price() );
+		params.put("count", reserv.getCount() );
+		params.put("r_date", reserv.getR_date() );
+		this.sqlSession.insert("reservMapper.insertReserv", params);
+	}
+    @Override
+    public Reservation getLatestReservation(String Id) {
+        return sqlSession.selectOne("reservMapper.getLatestReservation", Id);
+    }
+    @Override
+    public UserInfo getUserInfoById(String user_id) {
+        return sqlSession.selectOne("accMapper.getUserInfoById", user_id);
+    }
+    @Override
+    public void insertRoom(Room room, String accommodationId) {
+        String nextRoomId = getNextRoomId(); // 자동 증가된 ID 가져오기
+        room.setId(new RoomId(nextRoomId, accommodationId));
+
+        // 기본 이미지 설정
+        if (room.getRoom_image() == null || room.getRoom_image().trim().isEmpty()) {
+            room.setRoom_image("/imgs/default_room.png");
+        }
+
+        sqlSession.insert("accMapper.insertRoom", room);
+    }
+
+	
+    @Override
+    public void insertAccommodation(Accommodation accommodation) {
+        accommodation.setAccommodation_id(getNextAccommodationId());
+        accommodation.setApp_status(0); // 승인 상태 기본값 설정
+
+        // 기본값 설정
+        if (accommodation.getAccname() == null || accommodation.getAccname().trim().isEmpty()) {
+            accommodation.setAccname("이름 없음");
+        }
+        if (accommodation.getCategory() == null || accommodation.getCategory().getCategory_id() == null) {
+            accommodation.setCategory(new Category());
+            accommodation.getCategory().setCategory_id("MOT"); // 기본값 설정
+        }
+        if (accommodation.getLocation() == null || accommodation.getLocation().trim().isEmpty()) {
+            accommodation.setLocation("위치 정보 없음");
+        }
+        if (accommodation.getPrice_per_night() == null) {
+            accommodation.setPrice_per_night(0);
+        }
+        if (accommodation.getDescription() == null || accommodation.getDescription().trim().isEmpty()) {
+            accommodation.setDescription(generateDescription(accommodation));
+        }
+        if (accommodation.getAcc_image() == null || accommodation.getAcc_image().trim().isEmpty()) {
+            accommodation.setAcc_image("/imgs/숙소사진1.png"); // 기본 이미지 설정
+        }
+
+        sqlSession.insert("accMapper.insertAccommodation", accommodation);
+    }
+	
+    @Override
+    public String getNextAccommodationId() {
+        String maxId = sqlSession.selectOne("accMapper.getMaxAccommodationId");
+        return (maxId != null) ? String.valueOf(Integer.parseInt(maxId) + 1) : "1"; // 기존 ID가 없으면 "1"부터 시작
+    }
+
+    @Override
+    public String getNextRoomId() {
+        String maxId = sqlSession.selectOne("accMapper.getMaxRoomId");
+        return (maxId != null) ? String.valueOf(Integer.parseInt(maxId) + 1) : "1"; // 기존 ID가 없으면 "1"부터 시작
+    }
+    
+    @Override
+    public String generateDescription(Accommodation accommodation) {
+        StringBuilder description = new StringBuilder();
+        if (accommodation.isPetFriendly()) description.append("애견 동반 가능, ");
+        if (accommodation.isFreeParking()) description.append("주차 무료, ");
+        if (accommodation.isWifi()) description.append("와이파이, ");
+        if (accommodation.isBreakfast()) description.append("조식, ");
+        if (accommodation.getCheckin() != null) description.append("체크인: ").append(accommodation.getCheckin()).append(", ");
+        if (accommodation.getCheckout() != null) description.append("체크아웃: ").append(accommodation.getCheckout()).append(", ");
+        if (accommodation.getContactPhone() != null) description.append("문의전화: ").append(accommodation.getContactPhone());
+        if (description.length() > 2) description.setLength(description.length() - 2);
+        return description.toString();
+    }
+
+	
+	
+}

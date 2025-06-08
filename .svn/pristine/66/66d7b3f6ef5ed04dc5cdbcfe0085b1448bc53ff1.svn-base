@@ -1,0 +1,138 @@
+@charset "EUC-KR";
+
+body {
+    text-align: center;
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #ffffff; /* 부드러운 배경 */
+}
+
+h1 {
+    font-size: 2.8em;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 25px;
+    text-align: center;
+    letter-spacing: 1px;
+    padding: 10px;
+    border-bottom: 4px solid #ff7f9c; /* 부드러운 포인트 컬러 */
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.4em;
+        border-bottom: 3px solid #ff7f9c;
+    }
+}
+
+
+/* 숙소 검색하기 버튼 */
+.back-search {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 8px;
+    background: #ff6b81;
+    color: white;
+    transition: 0.3s;
+    margin-bottom: 20px;
+}
+.back-search:hover {
+    background: #d83f5b;
+}
+
+.container {
+    display: flex;
+    justify-content: center; /* 중앙 정렬 */
+    align-items: center; /* 세로 정렬 */
+    margin-top: 30px;
+}
+
+form {
+    display: flex; /* 버튼을 가로로 배치 */
+    gap: 15px; /* 버튼 간격 */
+    flex-wrap: nowrap; /* 한 줄 유지 */
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 180px;
+    height: 120px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    color: black;
+    text-align: center;
+    border: none;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    flex-shrink: 0; /* 버튼 크기 유지 */
+}
+
+/* 반응형 - 작은 화면에서도 가로 정렬 유지 */
+@media (max-width: 900px) {
+    form {
+        overflow-x: auto; /* 가로 스크롤 가능 */
+        justify-content: flex-start; /* 가로 스크롤 시 왼쪽 정렬 */
+    }
+    .button {
+        width: 160px;
+        height: 110px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    form {
+        flex-wrap: wrap; /* 화면이 작아지면 버튼이 자동으로 줄 바꿈 */
+        justify-content: center;
+    }
+    .button {
+        width: 140px;
+        height: 100px;
+        font-size: 14px;
+    }
+}
+
+/* 버튼 호버 효과 */
+.button:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 숙소 유형별 진한 파스텔톤 색상 + 테두리 */
+.motel { background-color: #9BD6C5; color: white; border: 2px solid #7DBBAF; } /* 민트 */
+.hotel { background-color: #FFBF94; color: white; border: 2px solid #E8A37F; } /* 살구색 */
+.pension { background-color: #85B3E9; color: white; border: 2px solid #6D9AD3; } /* 파스텔 블루 */
+.camping { background-color: #D9DCDF; color: white; border: 2px solid #BFC3C6; } /* 라이트 그레이 */
+.guest { background-color: #B795E0; color: white; border: 2px solid #9D7EC7; } /* 라벤더 */
+.space { background-color: #BABEC4; color: white; border: 2px solid #A1A6AC; } /* 소프트 그레이 */
+
+
+/* 반응형 디자인 */
+@media (max-width: 900px) {
+    .container {
+        gap: 20px;
+    }
+    .button {
+        width: 160px;
+        height: 110px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
+    .button {
+        width: 140px;
+        height: 100px;
+        font-size: 14px;
+    }
+}

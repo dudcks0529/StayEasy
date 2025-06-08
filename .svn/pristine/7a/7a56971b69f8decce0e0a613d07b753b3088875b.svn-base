@@ -1,0 +1,30 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>숙박 예약</title>
+<link rel="stylesheet" type="text/css" href="../css/reservindex.css">
+</head>
+<body>
+
+<h1>숙박 예약</h1>
+<br/>
+<div>
+<a href="../search/search.html" class="back-search">숙소 검색하기</a>
+</div>
+<br/><br/>
+
+<div class="container">
+<form action="../reserv/reservList.html" method="get">
+	<input type="hidden" name="pageNo" value="1"/>
+	<button class="button motel" name="TYPE" value="MOT">모텔</button>
+	<button class="button hotel" name="TYPE" value="HOT">호텔·리조트</button>
+	<button class="button pension" name="TYPE" value="PEN">펜션·풀빌라</button>
+	<button class="button camping" name="TYPE" value="CAM">캠핑·글램핑</button>
+	<button class="button guest" name="TYPE" value="GUE">게스트 하우스</button>
+	<button class="button space" name="TYPE" value="SPA">공간 대여</button>
+</form>
+</div>
+</body>
+</html>  

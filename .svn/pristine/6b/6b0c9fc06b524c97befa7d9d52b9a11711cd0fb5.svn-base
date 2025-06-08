@@ -1,0 +1,39 @@
+@charset "EUC-KR";
+	body {
+		text-align: center;
+		font-family: Arial, sans-serif;
+	}
+
+	h1 {
+		font-size: 2em;
+		margin-bottom: 20px;
+	}
+
+	.container {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+	}
+
+	.button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 140px;
+		height: 160px;
+		border-radius: 50%;
+		text-decoration: none;
+		font-size: 16px;
+		font-weight: bold;
+		color: black;
+		text-align: center;
+		border: 2px solid black;
+	}
+
+	/* 색상 지정 */
+	.motel { background-color: #A2D149; } /* 연두색 */
+	.hotel { background-color: #E4753B; } /* 주황색 */
+	.pension { background-color: #22A6E8; } /* 파란색 */
+	.camping { background-color: white; } /* 흰색 */
+	.guest { background-color: #673AB7; color: white; } /* 보라색 */
+	.space { background-color: #BDBDBD; } /* 회색 */

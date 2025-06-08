@@ -1,0 +1,229 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR" pageEncoding="EUC-KR"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>메인화면</title>
+
+<!-- 최신 Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" type="text/css" href="../css/footer.css">
+
+<style>
+/* 공통 스타일 */
+body {
+    background: #f2fbff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.content {
+    padding: 50px 0;
+}
+
+/* 공지사항 테이블 */
+.custom-table {
+    width: 80%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.custom-table th, .custom-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+}
+
+.custom-table th {
+    background: linear-gradient(135deg, #A0E7E5, #B4F8C8);
+    color: #333;
+}
+
+.custom-table tr:hover {
+    background-color: #f9fcff;
+}
+
+.custom-table a {
+    color: #45aaf2;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* 섹션 타이틀 */
+.section-title {
+    font-size: 26px;
+    margin: 40px 0 20px;
+    color: #333;
+    text-align: center;
+}
+
+/* 슬라이드 스타일 */
+.swiper {
+    width: 80%;
+    margin: 0 auto 50px;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 카드형 박스 */
+.event-card {
+    width: 200px;
+    height: 120px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+}
+
+/* 카드 텍스트 */
+.event-card h3 {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+.event-card p {
+    font-size: 12px;
+    color: #666;
+}
+
+/* 화살표 스타일 */
+.swiper-button-next, .swiper-button-prev {
+    color: #45aaf2 !important;
+    width: 50px !important;
+    height: 50px !important;
+    opacity: 1 !important;
+    z-index: 1000 !important;
+    top: 50% !important;
+    transform: translateY(-50%);
+}
+
+.swiper-button-next::after, .swiper-button-prev::after {
+    font-size: 35px !important;
+    font-weight: bold;
+}
+
+.swiper-button-next::after {
+    content: '▶';
+}
+
+.swiper-button-prev::after {
+    content: '◀';
+}
+
+/* 페이지네이션 점 (원하는 경우) */
+.swiper-pagination-bullet {
+    background: #45aaf2;
+    opacity: 0.7;
+}
+</style>
+
+</head>
+<body>
+
+<menu>
+    <%@ include file="./menu_header.jsp" %>
+</menu>
+
+<div class="content">
+
+<c:choose>
+    <c:when test="${ BODY != null }">
+        <jsp:include page="${ BODY }"/>
+    </c:when>
+</c:choose>
+
+<c:if test="${ BODY == null }">
+
+    <!-- 공지사항 -->
+    <div class="section-title">
+        <a href="../notice/notice.html">공지사항</a>
+    </div>
+    <table class="custom-table">
+        <tr><th>글번호</th><th>제목</th><th>작성일</th></tr>
+        <c:forEach var="dto1" items="${NOTICES}">
+            <tr>
+                <td>${dto1.notice_id}</td>
+                <td><a href="../notice/detail.html?notice_id=${dto1.notice_id}">${dto1.title}</a></td>
+                <td><fmt:formatDate value="${dto1.n_date}" pattern="yyyy/MM/dd HH:mm"/></td>
+            </tr>
+        </c:forEach>
+    </table>
+
+    <!-- 이벤트 슬라이드 -->
+    <div class="section-title">
+        <a href="../event/eventList.html">이벤트</a>
+    </div>
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            <c:forEach var="dto2" items="${EVENTS}">
+                <div class="swiper-slide">
+                    <a href="../event/detail.html?event_id=${dto2.event_id}">
+                        <div class="event-card">
+                            <h3>${dto2.title}</h3>
+                            <p><fmt:formatDate value="${dto2.e_date}" pattern="yyyy/MM/dd HH:mm"/></p>
+                        </div>
+                    </a>
+                </div>
+            </c:forEach>
+        </div>
+        <!-- 화살표 -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+        <!-- 페이지네이션 -->
+        <div class="swiper-pagination"></div>
+    </div>
+
+</c:if>
+
+</div>
+
+<%@ include file="./footer.jsp" %>
+
+<!-- 최신 Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<!-- 슬라이드 초기화 -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var swiper = new Swiper(".mySwiper", {
+        slidesPerView: 3,
+        spaceBetween: 20,
+        loop: true,
+        autoplay: {
+            delay: 2500,
+            disableOnInteraction: false
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+        }
+    });
+});
+</script>
+
+</body>
+</html>

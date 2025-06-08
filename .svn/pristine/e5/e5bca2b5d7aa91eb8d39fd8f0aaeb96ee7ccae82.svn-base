@@ -1,0 +1,13 @@
+package dao;
+
+import java.util.List;
+
+import model.CartItem;
+import model.Reservation;
+import model.User;
+
+public interface CartDao {
+	List<CartItem> selectCartItem(String user_id); //로그인 시 장바구니 찾기
+	void insertCartItem(CartItem cartItem, Reservation reservation, User user); //장바구니 담기
+	Integer getMaxCartId(); //장바구니 항목 ID 최대값 찾기
+}

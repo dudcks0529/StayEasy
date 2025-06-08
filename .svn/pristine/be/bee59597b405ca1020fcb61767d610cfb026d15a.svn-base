@@ -1,0 +1,244 @@
+	package controller;
+	
+	import java.util.List;
+	
+	import javax.servlet.http.HttpSession;
+	import javax.validation.Valid;
+	
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.stereotype.Controller;
+	import org.springframework.validation.BindingResult;
+	import org.springframework.web.bind.annotation.RequestMapping;
+	import org.springframework.web.bind.annotation.RequestMethod;
+	import org.springframework.web.bind.annotation.RequestParam;
+	import org.springframework.web.servlet.ModelAndView;
+	
+	import dao.AccDao;
+	import dao.InquireDao;
+	import model.Event;
+	import model.Inquire;
+	import model.LoginUser;
+	import model.Reservation;
+	import model.StartEnd;
+	import model.User;
+	
+	
+	@Controller
+	public class InquireController {
+		
+	    @Autowired
+	    private InquireDao inquireDao;
+	    @Autowired 
+	    private AccDao accDao;
+	    
+	    
+	    @RequestMapping(value="/inquire/inquireReply.html")
+	    public ModelAndView reply(Integer inquire_id, Integer parent_id, Integer group_id, String status) {
+	    	ModelAndView mav = new ModelAndView("main");
+	    	Inquire inquire = this.inquireDao.getInquireDetail(inquire_id);
+	    	String reserv_id = this.inquireDao.getReservId(inquire_id);
+	    	
+	    	Reservation reservation = new Reservation();
+	        reservation.setReservation_id(reserv_id);
+	        inquire.setReservation(reservation);
+	        
+	        
+	    	inquire.setI_date(null); 
+	    	inquire.setGroup_id(group_id); inquire.setParent_id(parent_id); inquire.setStatus(status);
+	    	mav.addObject("title","RE]"+inquire.getTitle());
+	    	mav.addObject("content",inquire.getContent());
+	    	mav.addObject("reserv_id",reserv_id);
+	    	mav.addObject("BODY","inquireWrite.jsp");
+	    	mav.addObject("inquire",inquire);
+	    	return mav;
+	    }
+	    
+		@RequestMapping(value="/inquire/modify.html")
+		public ModelAndView modify(@Valid Inquire inquire, BindingResult br, String BTN, Integer event_id, HttpSession session) {
+		    ModelAndView mav = new ModelAndView("main");
+		    if (br.hasErrors()) {
+		        mav.addObject("BODY", "inquireDetailOwner.jsp");
+		        mav.getModel().putAll(br.getModel());
+		        return mav;
+		    }
+	
+		    if (BTN.equals("삭 제")) {
+		        this.inquireDao.deleteInquire(inquire.getInquire_id());
+		        mav.addObject("BODY", "inquireDeleteResult.jsp");
+		    } else if (BTN.equals("수 정")) {
+		        this.inquireDao.updateInquire(inquire);
+		        mav.addObject("inquire",inquire);
+		        mav.addObject("BODY", "inquireUpdateResult.jsp");
+	    
+		    }
+	
+		    return mav;
+		}
+	    
+		@RequestMapping(value="/inquire/inquireWrite.html", method=RequestMethod.GET)
+	    public ModelAndView writeform(HttpSession session) {
+	        ModelAndView mav = new ModelAndView("main");
+	        // 로그인된 사용자 정보 가져오기
+	        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	        if (loginUser == null) {
+	            mav.addObject("BODY", "login.jsp");
+	            return mav;
+	        }
+	
+	        // 가장 최근 예약 정보 가져오기
+	        Reservation reservation = accDao.getLatestReservation(loginUser.getId());
+	
+	        // 문의 객체 생성 및 사용자, 예약 정보 설정
+	        Inquire inquire = new Inquire();
+	        inquire.setUser(new User());
+	        inquire.getUser().setUser_id(loginUser.getId());
+	        inquire.setReservation(reservation);
+	        inquire.setOrder_no(0);
+	        inquire.setGroup_id(0);
+	        inquire.setParent_id(0);
+	        
+	        Integer inq_id = this.inquireDao.countInqId();
+	        System.out.println("inq_id : " + inq_id);
+	        if(inq_id == null || inq_id == 0) {
+	        	inq_id = 1;
+	        } else {
+	        	inq_id +=1;
+	        }
+	    	inquire.setInquire_id(inq_id);
+	        String reserv_id = "";
+	        if (reservation != null) {
+	            reserv_id = reservation.getReservation_id(); // ⭐ 이게 정답
+	        }
+	        
+	        mav.addObject("reserv_id",reserv_id);
+	        mav.addObject("inquire", inquire);
+	        mav.addObject("BODY", "inquireWrite.jsp");
+	        return mav;
+	    }
+		@RequestMapping(value="/inquire/write.html", method=RequestMethod.POST)
+		public ModelAndView write(@Valid Inquire inquire, BindingResult br, HttpSession session) {
+		    ModelAndView mav = new ModelAndView("main");
+		    System.out.println("예약번호 디버깅: " + inquire.getReservation()); // null이면 문제
+		    System.out.println("예약번호 디버깅 (id): " + (inquire.getReservation() != null ? inquire.getReservation().getReservation_id() : "NULL")); // null 체크
+		    System.out.println("문의번호 "+inquire.getInquire_id());
+		    // 유효성 검사 실패 시
+		    
+		    if (br.hasErrors()) {
+		        mav.addObject("BODY", "inquireWrite.jsp");
+		        mav.getModel().putAll(br.getModel());
+		        return mav;
+		    }
+	
+		    // 로그인 사용자 확인
+		    LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+		    if (loginUser == null) {
+		        mav.addObject("BODY", "login.jsp");
+		        return mav;
+		    }
+	
+		    // 작성자 정보 세팅
+		    inquire.setUser(new User());
+		    inquire.getUser().setUser_id(loginUser.getId());
+	
+		    // 예약 정보 설정
+		    Reservation reservation = null;
+	
+		    if (inquire.getParent_id() != null && inquire.getParent_id() > 0) { // ✅ 답변 글인 경우
+		        Inquire parentInquire = this.inquireDao.getInquireDetail(inquire.getParent_id());
+		        if (parentInquire != null) {
+		            reservation = parentInquire.getReservation(); // 부모 문의의 예약 정보 가져오기
+		        }
+		    } else { // ✅ 원글인 경우
+		        reservation = accDao.getLatestReservation(loginUser.getId()); // 본인 최신 예약 정보
+		    }
+	
+		    // 예약 정보 없을 때 예외 처리
+		    if (reservation == null) {
+		        mav.addObject("errorMessage", "최근 예약 정보가 없습니다. 예약 후 문의를 등록하세요.");
+		        mav.addObject("BODY", "inquireWrite.jsp");
+		        return mav;
+		    }
+	
+		    // 예약 정보 세팅
+		    inquire.setReservation(reservation);
+	
+		    // 새로운 문의 ID 설정 (maxNum)
+		    Integer maxNum = this.inquireDao.getMaxNum()+1;
+	
+		    // 그룹 ID 및 답변/원글 구분
+		    if (inquire.getParent_id() == null || inquire.getParent_id() == 0) { // 원글
+		        inquire.setParent_id(0);
+		        inquire.setOrder_no(0);
+		        inquire.setGroup_id(maxNum);
+		    } else { // 답글
+		        this.inquireDao.updateOrderNo(inquire);
+		    }
+	
+		    // 기타 정보 세팅
+		    inquire.setInquire_id(maxNum);
+		    inquire.setStatus("대기");
+	
+		    // 최종 저장
+		    this.inquireDao.putInquire(inquire);
+		    
+		    // 결과 페이지 이동
+		    mav.addObject("BODY", "inquireWriteResult.jsp");
+		    return mav;
+		}
+	
+	
+	    /**
+	     * 문의 내용을 실제 DB에 저장하는 메소드 (POST)
+	     */
+	   
+	    @RequestMapping(value="/inquire/inquireList.html")
+	    public ModelAndView list(HttpSession session, Integer pageNo) {
+	    	ModelAndView mav = new ModelAndView("main");
+	        LoginUser loginUser = (LoginUser) session.getAttribute("loginUser");
+	        if (loginUser == null) {
+	            mav.addObject("BODY", "login.jsp");
+	            return mav;
+	        }
+	        String userId = loginUser.getId(); // 현재 로그인한 사용자 ID
+	        
+	    	int currentPage = 1;
+	    	if(pageNo != null) currentPage = pageNo;
+	    	int start =(currentPage-1) * 4;
+	    	int end = ((currentPage-1)*4)+5;
+	    	StartEnd se = new StartEnd();se.setStart(start);se.setEnd(end); se.setUserId(userId);  // 🔥 추가: 현재 로그인한 user_id를 필터링 조건으로 전달
+	    	List<Inquire> inquireList;
+	        if ("admin".equals(userId)) {
+	            // 🔥 admin은 모든 문의 조회
+	            inquireList = this.inquireDao.getInquireList(se);
+	        } else {
+	            // 🔥 일반 사용자는 본인의 문의 + admin이 작성한 문의만 조회
+	            inquireList = this.inquireDao.getInquireListByUser(se);
+	        }
+	        int totalCount = "admin".equals(userId) ? this.inquireDao.getInquireCountAll() : this.inquireDao.getInquireCountUser(userId);
+	    	int pageCount = totalCount/4;
+	    	if(totalCount %4 !=0) pageCount++;
+	    	mav.addObject("currentPage",currentPage);
+	    	mav.addObject("PAGES",pageCount);
+	    	mav.addObject("BODY","inquire.jsp");
+	    	mav.addObject("INQUIRE",inquireList);
+	    	return mav;
+	    }
+	
+		@RequestMapping(value="/inquire/detail.html")
+		public ModelAndView readinquire(Integer inquire_id, HttpSession session) {
+	
+			ModelAndView mav = new ModelAndView("main");
+			Inquire inquire = this.inquireDao.getInquireDetail(inquire_id);
+			LoginUser user = (LoginUser)session.getAttribute("loginUser");
+			mav.addObject("inquire",inquire);
+		        if (user != null && user.getId().equals("admin")) {
+		            mav.addObject("BODY", "inquireDetailAdmin.jsp");
+		        } else {
+		            mav.addObject("BODY", "inquireDetailOwner.jsp");
+		        } 
+	
+		    return mav;
+		}
+	
+	
+	}

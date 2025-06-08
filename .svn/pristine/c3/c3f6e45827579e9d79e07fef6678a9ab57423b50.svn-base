@@ -1,0 +1,26 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>숙박 예약</title>
+<link rel="stylesheet" type="text/css" href="../css/reservindex.css">
+</head>
+<body>
+
+<h1>숙박 예약</h1>
+<br/>
+<div class="search-button">
+<a href="../search/search.html">숙소 검색하기</a>
+</div>
+<br/><br/>
+<div class="container">
+	<a href="../reserv/reservList.html?TYPE=MOT&pageNo=1" class="button motel">모텔</a>
+	<a href="../reserv/reservList.html?TYPE=HOT&pageNo=1" class="button hotel">호텔<br>리조트</a>
+	<a href="../reserv/reservList.html?TYPE=PEN&pageNo=1" class="button pension">펜션<br>풀빌라</a>
+	<a href="../reserv/reservList.html?TYPE=CAM&pageNo=1" class="button camping">캠핑<br>글램핑</a>
+	<a href="../reserv/reservList.html?TYPE=GUE&pageNo=1" class="button guest">게스트<br>하우스</a>
+	<a href="../reserv/reservList.html?TYPE=SPA&pageNo=1" class="button space">공간<br>대여</a>
+</div>
+</body>
+</html>  

@@ -1,0 +1,53 @@
+<%@ page language="java" contentType="text/html; charset=EUC-KR"
+    pageEncoding="EUC-KR"%>
+<%@ page import="model.*" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+</head>
+<body>
+<div align="center">
+<h3>문의 사항 보기</h3>
+<table>
+	<tr><th>문의 번호</th><td>${INQUIRE.inquire_id}</td></tr>
+	<tr><th>작성자</th><td>${INQUIRE.user.user_id}</td></tr>
+	<tr><th>작성일</th><td>${INQUIRE.i_date}</td></tr>
+	<tr><th>내 용</th><td><textarea rows="5" cols="60" 
+			readonly="readonly"></textarea>${INQUIRE.content }</td></tr>
+	<tr><td colspan="2" align="center">
+		<a href="javascript:goReply()">[답글]</a>
+		<a href="../inquire/inquireList.html">[목록]</a></td></tr>
+</table>
+</div>
+<form name="move" method="post">
+	<input type="hidden" name="id" value="${INQUIRE.w_id }">
+	<input type="hidden" name="parentid" value="${INQUIRE.w_id }">
+	<input type="hidden" name="groupid" value="${INQUIRE.group_id }">
+</form>
+<script type="text/javascript">
+function goReply(){
+	document.move.action = "../inquire/inquireReplyForm.html";
+	document.move.submit();
+}
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
