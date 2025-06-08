@@ -64,16 +64,6 @@
 
 ---
 
-## 🗃️ 데이터베이스 및 구조
-
-<details>
-  <summary> ✴️ ERD 이미지 보기</summary>
-
-  ![ERD 이미지](./screenshots/StayEasy_ERD.png)
-
-</details>
----
-
 ## 👨‍👩‍👧‍👦 팀원 및 역할
 
 | 이름 | 역할 |
@@ -82,6 +72,17 @@
 | 김용우 | DB설계, 공지사항 페이지, 숙소 검색 및 필터 기능, 페이징 처리, 숙소 리뷰 및 평점 |
 | 이승준 | 이벤트 페이지, 숙소 및 예약 관리(관리자용) |
 | 한민주 | UI/UX 디자인, 마이페이지(회원), 사용자 조회(관리자용) |
+
+---
+
+## 🗃️ 데이터베이스 및 구조
+
+<details>
+  <summary> ✴️ ERD 이미지 보기</summary>
+
+  ![ERD 이미지](./screenshots/StayEasy_ERD.png)
+
+</details>
 
 ---
 
