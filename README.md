@@ -24,7 +24,7 @@
 
 | 구분 | 기술 스택 |
 |------|-----------|
-| Backend | Java 8, Spring Framework, Spring JDBC / MyBatis, JSP, JSTL,  Maven |
+| Backend | Java 8, Spring Framework, Spring JDBC / MyBatis, JSP, JSTL |
 | Frontend | HTML, CSS, JavaScript |
 | Database | Oracle 11g |
 | 개발 환경 | Spring Tool Suite (STS), Apache Tomcat v9.0 |
