@@ -25,7 +25,7 @@
 
 | 구분 | 기술 스택 |
 |------|-----------|
-| Backend | Java 21, Spring Framework, Spring JDBC / MyBatis, JSP, JSTL |
+| Backend | Java 21, Spring Framework, JDBC, MyBatis, JPA, JSTL, JSP |
 | Frontend | HTML, CSS, JavaScript |
 | Database | Oracle 11g |
 | 개발 환경 | Spring Tool Suite (STS), Apache Tomcat v9.0 |
@@ -35,7 +35,8 @@
 <br>
 
 **기술 포인트**
-- Spring MVC 구조를 기반으로 컨트롤러-서비스-DAO 계층을 분리하여 유지보수가 용이한 구조로 설계
+- Spring MVC의 기본 구조에 따라 컨트롤러를 중심으로 사용자 요청을 처리
+- 컨트롤러에서 직접 DAO를 호출해 로직을 처리하는 방식으로 전체 흐름을 제어
 - MyBatis를 사용해 SQL을 XML로 분리하고, 복잡한 조인문을 효율적으로 처리
 - JavaMailSender를 이용한 임시 비밀번호 메일 전송 구현
 - 사용자 비밀번호는 PBKDF2 해시 알고리즘을 적용하여 보안 강화
